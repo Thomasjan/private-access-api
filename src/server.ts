@@ -1,12 +1,17 @@
 import express, { Request, Response } from 'express';
-require('dotenv').config();
+import cors from 'cors';
 
+require('dotenv').config();
+import apiRouter from './routes';
 
 const app = express()
 const port = 3000
+app.use(cors());
 
 
-app.get('/', (req, res) => {
+app.use('/api', apiRouter);
+
+app.get('/', (req: Request, res: Response) => {
 
     const data = [
         {id: 1, name: 'John'},
