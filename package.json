@@ -4,16 +4,21 @@
   "main": "server.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --exec ts-node src/server.ts"
+    "start": "nodemon --exec ts-node src/server.ts",
+    "migrate": "knex migrate:latest --env=development --knexfile=src/knexfile.ts"
   },
   "keywords": [],
   "author": "Gestimum",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
-    "mysql": "^2.18.1"
+    "knex": "^2.4.2",
+    "mongoose": "^7.2.0",
+    "mysql2": "^3.3.1",
+    "typeorm": "^0.3.16"
   },
   "devDependencies": {
     "@types/cors": "^2.8.13",
