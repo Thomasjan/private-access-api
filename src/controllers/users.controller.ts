@@ -16,6 +16,7 @@ export const getUsers = ((req: Request, res: Response) => {
 export const getUser = (req: Request, res: Response) => {
   const userId = req.params.id; // Assuming the user ID is passed as a parameter in the URL
   
+  console.log('Fetching user with ID: ' + userId)
   connection.query('SELECT * FROM users WHERE id = ?', userId, (err, results) => {
     if (err) {
       console.error('Error executing query:', err);
