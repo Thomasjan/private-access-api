@@ -13,9 +13,9 @@ export const getEntreprises = ((req: Request, res: Response) => {
   });
 });
 
-//Création d'un utilisateur
+//Création d'une entreprise
 export const addEntreprise = (req: Request, res: Response): void => {
-  const { social_reason } = req.body;
+  const { social_reason, code_client, category, subcategory, contract, end_contract } = req.body;
 
   if (!social_reason) {
     res.status(400).send('Invalid request');
@@ -24,6 +24,11 @@ export const addEntreprise = (req: Request, res: Response): void => {
 
   const entreprise = {
     social_reason,
+    code_client,
+    category,
+    subcategory,
+    contract,
+    end_contract,
   };
 
   connection.query('INSERT INTO Entreprise SET ?', entreprise, (err, results) => {
