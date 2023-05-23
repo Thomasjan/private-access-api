@@ -1,19 +1,18 @@
 import { Knex } from 'knex';
 
 export const up = (knex: Knex): Knex.SchemaBuilder => {
-  return knex.schema.createTable('users', (table) => {
+  return knex.schema.createTable('downloads', (table) => {
     table.increments('id').primary();
-    table.string('name').notNullable();
-    table.string('email').notNullable();
-    table.string('password').notNullable();
+    table.string('document').notNullable();
+    table.string('date').notNullable();
+    table.integer('user_id').unsigned();
+    table.foreign('user_id').references('users.id');
     table.integer('entreprise_id').unsigned();
     table.foreign('entreprise_id').references('entreprises.id');
-    table.integer('role_id').unsigned();
-    table.foreign('role_id').references('roles.id');
     table.timestamps(true, true);
   });
 };
 
 export const down = (knex: Knex): Knex.SchemaBuilder => {
-  return knex.schema.dropTable('users');
+  return knex.schema.dropTable('downloads');
 };
