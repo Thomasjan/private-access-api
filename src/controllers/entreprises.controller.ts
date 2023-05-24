@@ -6,7 +6,7 @@ export const getEntreprises = ((req: Request, res: Response) => {
   connection.query('SELECT * FROM Entreprises', (err, results) => {
     if (err) {
       console.error('Error executing query:', err);
-      res.status(500).send('Error retrieving entreprises');
+      res.status(500).send('Erreur de chargements des entreprises');
       return;
     }
     res.json(results);
@@ -17,8 +17,8 @@ export const getEntreprises = ((req: Request, res: Response) => {
 export const addEntreprise = (req: Request, res: Response): void => {
   const { social_reason, code_client, category, subcategory, contract, end_contract } = req.body;
 
-  if (!social_reason) {
-    res.status(400).send('Invalid request');
+  if (!social_reason || !code_client || !category || !subcategory || !contract || !end_contract) {
+    res.status(400).send('Veuillez remplir tous les champs');
     return;
   }
 
@@ -31,10 +31,10 @@ export const addEntreprise = (req: Request, res: Response): void => {
     end_contract,
   };
 
-  connection.query('INSERT INTO Entreprise SET ?', entreprise, (err, results) => {
+  connection.query('INSERT INTO Entreprises SET ?', entreprise, (err, results) => {
     if (err) {
       console.error('Error executing query:', err);
-      res.status(500).send('Error adding entreprise');
+      res.status(500).send("Erreur de l'ajout de l'entreprise");
       return;
     }
 
