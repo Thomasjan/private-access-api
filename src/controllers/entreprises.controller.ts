@@ -6,35 +6,102 @@ export const getEntreprises = ((req: Request, res: Response) => {
   connection.query('SELECT * FROM Entreprises', (err, results) => {
     if (err) {
       console.error('Error executing query:', err);
-      res.status(500).send('Error retrieving entreprises');
+      res.status(500).send('Erreur de chargements des entreprises');
       return;
     }
     res.json(results);
   });
 });
 
-//Création d'un utilisateur
+//Création d'une entreprise
 export const addEntreprise = (req: Request, res: Response): void => {
-  const { social_reason } = req.body;
+  const { social_reason, code_client, category, subcategory, contract, end_contract } = req.body;
 
-  if (!social_reason) {
-    res.status(400).send('Invalid request');
+  if (!social_reason || !code_client || !category || !subcategory || !contract || !end_contract) {
+    res.status(400).send('Veuillez remplir tous les champs');
     return;
   }
 
+  // Check if an entreprise with the same code_client or social_reason already exists
+  connection.query(
+    'SELECT * FROM Entreprises WHERE code_client = ? OR social_reason = ?',
+    [code_client, social_reason],
+    (err, results: any) => {
+      if (err) {
+        console.error('Error executing query:', err);
+        res.status(500).send("Erreur lors de la vérification de l'entreprise");
+        return;
+      }
+
+      
+      if (results.length > 0) {
+        res.status(409).send('Une entreprise avec le même code_client ou le même nom existe déjà');
+        return;
+      }
+
   const entreprise = {
     social_reason,
+    code_client,
+    category,
+    subcategory,
+    contract,
+    end_contract,
   };
 
-  connection.query('INSERT INTO Entreprise SET ?', entreprise, (err, results) => {
+  connection.query('INSERT INTO Entreprises SET ?', entreprise, (err, results) => {
     if (err) {
       console.error('Error executing query:', err);
-      res.status(500).send('Error adding entreprise');
+      res.status(500).send("Erreur de l'ajout de l'entreprise");
       return;
     }
 
-    const insertedEntrepriseId = (results as any)?.[0]?.insertId;
-    res.status(201).json({ id: insertedEntrepriseId, ...entreprise });
+    const insertedEntrepriseId = (results as any)?.insertId;
+    const user = {
+      name: 'user',
+      surname: entreprise.social_reason,
+      email: 'user@'+entreprise.social_reason+'.com',
+      password: 'user@'+entreprise.social_reason+'.com',
+      entreprise_id: insertedEntrepriseId,
+      role_id: 0,
+    };
+
+    switch (entreprise.category) {
+      case '1. PARTENAIRE':
+        user.role_id = 2;
+        break;
+      case '2. PME':
+        user.role_id = 3;
+        break;
+      default:
+        user.role_id = 4;
+        break;
+    }
+
+    createUser(user)
+      .then(() => {
+        res.status(201).json({ id: insertedEntrepriseId, ...entreprise });
+      })
+      .catch((error) => {
+        console.error('Error creating user:', error);
+        res.status(500).send("Erreur de la création de l'utilisateur");
+      });
+    });
+  });
+};
+
+const createUser = (user: any): Promise<void> => {
+  return new Promise<void>((resolve, reject) => {
+    // Your logic to create the user and insert into the database
+    // Assuming you have a connection to the database, use the appropriate query to insert the user
+
+    connection.query('INSERT INTO Users SET ?', user, (err) => {
+      if (err) {
+        console.error('Error executing query:', err);
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
   });
 };
 
