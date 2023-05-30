@@ -105,4 +105,71 @@ const createUser = (user: any): Promise<void> => {
   });
 };
 
+export const updateEntreprise = (req: Request, res: Response): void => {
+  const { social_reason, code_client, category, subcategory, contract, end_contract } = req.body;
+
+  if (!social_reason || !code_client || !category || !subcategory || !contract || !end_contract) {
+    res.status(400).send('Veuillez remplir tous les champs');
+    return;
+  }
+
+  const entreprise = {
+    social_reason,
+    code_client,
+    category,
+    subcategory,
+    contract,
+    end_contract,
+  };
+
+  connection.query(
+    'UPDATE Entreprises SET ? WHERE id = ?',
+    [entreprise, req.params.id],
+    (err, results) => {
+      if (err) {
+        console.error('Error executing query:', err);
+        res.status(500).send("Erreur de la modification de l'entreprise");
+        return;
+      }
+
+      res.status(200).json({ id: req.params.id, ...entreprise });
+    }
+  );
+}
+
+// export const deleteEntreprise = (req: Request, res: Response): void => {
+//   connection.query('DELETE FROM Entreprises WHERE id = ?', req.params.id, (err, results) => {
+//     if (err) {
+//       console.error('Error executing query:', err);
+//       res.status(500).send("Erreur de la suppression de l'entreprise");
+//       return;
+//     }
+
+//     res.status(200).json({ id: req.params.id });
+//   });
+// }
+
+export const deleteEntreprise = (req: Request, res: Response): void => {
+  const entrepriseId = req.params.id;
+
+  connection.query('DELETE FROM Users WHERE entreprise_id = ?', entrepriseId, (err, usersResult) => {
+    if (err) {
+      console.error('Error executing users deletion query:', err);
+      res.status(500).send("Erreur de la suppression des utilisateurs de l'entreprise");
+      return;
+    }
+
+    connection.query('DELETE FROM Entreprises WHERE id = ?', entrepriseId, (err, entrepriseResult) => {
+      if (err) {
+        console.error('Error executing entreprise deletion query:', err);
+        res.status(500).send("Erreur de la suppression de l'entreprise");
+        return;
+      }
+
+      res.status(200).json({ id: entrepriseId });
+    });
+  });
+};
+
+
 
