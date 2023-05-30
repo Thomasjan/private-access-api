@@ -1,17 +1,24 @@
 import { Request, Response } from 'express';
 import connection from '../database';
 
-//listes des utilisateurs
-export const getUsers = ((req: Request, res: Response) => {
-  connection.query('SELECT * FROM users', (err, results) => {
+//listes des utilisateurs avec l'entreprise associé
+export const getUsers = (req: Request, res: Response) => {
+  connection.query('SELECT users.*, entreprises.* FROM users JOIN entreprises ON users.entreprise_id = entreprises.id', (err, results: any) => {
     if (err) {
       console.error('Error executing query:', err);
       res.status(500).send('Error retrieving users');
       return;
     }
-    res.json(results);
+
+    // Map the results to include the 'entreprise' object in each user
+    const users = results.map((user: any) => {
+      const { entreprise_id, ...userData } = user;
+      return { ...userData };
+    });
+
+    res.json(users);
   });
-});
+};
 
 export const getUser = (req: Request, res: Response) => {
   const userId = req.params.id; // Assuming the user ID is passed as a parameter in the URL
@@ -36,7 +43,7 @@ export const getUser = (req: Request, res: Response) => {
 
 //Création d'un utilisateur
 export const addUser = (req: Request, res: Response): void => {
-  const { name, email, password } = req.body;
+  const { name, surname, email, password, entreprise_id, role_id } = req.body;
 
   if (!name || !email || !password) {
     res.status(400).send('Invalid request');
@@ -45,8 +52,11 @@ export const addUser = (req: Request, res: Response): void => {
 
   const user = {
     name,
+    surname,
     email,
     password,
+    entreprise_id,
+    role_id
   };
 
   connection.query('INSERT INTO users SET ?', user, (err, results) => {

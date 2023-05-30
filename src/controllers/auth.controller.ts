@@ -36,7 +36,7 @@ export const login = (req: Request, res: Response): void => {
     const entrepriseId = user.entreprise_id; // Assuming there is an 'entreprise_id' field in the 'users' table
 
     // Retrieve the social_reason from the entreprises table based on entrepriseId
-    connection.query('SELECT social_reason FROM Entreprises WHERE id = ?', entrepriseId, (err, results: any) => {
+    connection.query('SELECT * FROM Entreprises WHERE id = ?', entrepriseId, (err, results: any) => {
       if (err) {
         console.error('Error executing query:', err);
         // Handle error if necessary
@@ -74,7 +74,7 @@ export const login = (req: Request, res: Response): void => {
   //Récupérer les logs des logins
   export const getLogins = (req: Request, res: Response): void => {
     connection.query(
-      'SELECT logins.date, logins.name, logins.surname, logins.social_reason FROM logins',
+      'SELECT * FROM logins',
       (err, results: any) => {
         if (err) {
           console.error('Error executing query:', err);
@@ -90,6 +90,8 @@ export const login = (req: Request, res: Response): void => {
               social_reason: row.social_reason,
               category: row.category,
               subcategory: row.subcategory,
+              // contract: row.contract,
+              // end_contract: row.end_contract,
             },
             user: {
               id: row.user_id,
