@@ -24,49 +24,59 @@ export const login = (req: Request, res: Response): void => {
       return;
     }
 
-    if (user.password !== password) {
-      res.status(401).send({ message: 'Mot de passe incorrect' });
-      return;
-    }
-
-    // Add trace to database
-    const date = new Date();
-    const name = user.name;
-    const surname = user.surname;
-    const entrepriseId = user.entreprise_id; // Assuming there is an 'entreprise_id' field in the 'users' table
-
-    // Retrieve the social_reason from the entreprises table based on entrepriseId
-    connection.query('SELECT * FROM Entreprises WHERE id = ?', entrepriseId, (err, results: any) => {
+    bcrypt.compare(password, user.password, (err, passwordMatch) => {
       if (err) {
-        console.error('Error executing query:', err);
-        // Handle error if necessary
-        res.status(500).send({ message: 'Erreur lors de la récupération de la raison sociale' });
+        console.error('Error comparing passwords:', err);
+        res.status(500).send({ message: 'Server Error' });
         return;
       }
 
-      if (results.length === 0) {
-        // Handle case when no entreprise is found with the provided entrepriseId
-        res.status(404).send({ message: 'Aucune entreprise trouvée avec l\'ID fourni' });
+      if (!passwordMatch) {
+        res.status(401).send({ message: 'Mot de passe incorrect' });
         return;
       }
 
-      const social_reason = results[0].social_reason;
-      const category = results[0].category;
-      const subcategory = results[0].subcategory;
+      // Passwords match, continue with the login process
 
-      const trace = { date, name, surname, social_reason, category, subcategory };
+      // Add trace to database
+      const date = new Date();
+      const name = user.name;
+      const surname = user.surname;
+      const entrepriseId = user.entreprise_id; // Assuming there is an 'entreprise_id' field in the 'users' table
 
-      // Ajouter les logs des logins pour les utilisateurs non admins
-      if (user.role_id > 1) {
-        connection.query('INSERT INTO logins SET ?', trace, (err) => {
-          if (err) {
-            console.error('Error executing query:', err);
-            // Handle error if necessary
-          }
-        });
-      }
+      // Retrieve the social_reason from the entreprises table based on entrepriseId
+      connection.query('SELECT * FROM Entreprises WHERE id = ?', entrepriseId, (err, results: any) => {
+        if (err) {
+          console.error('Error executing query:', err);
+          // Handle error if necessary
+          res.status(500).send({ message: 'Erreur lors de la récupération de la raison sociale' });
+          return;
+        }
 
-      res.status(200).json(user);
+        if (results.length === 0) {
+          // Handle case when no entreprise is found with the provided entrepriseId
+          res.status(404).send({ message: 'Aucune entreprise trouvée avec l\'ID fourni' });
+          return;
+        }
+
+        const social_reason = results[0].social_reason;
+        const category = results[0].category;
+        const subcategory = results[0].subcategory;
+
+        const trace = { date, name, surname, social_reason, category, subcategory };
+
+        // Ajouter les logs des logins pour les utilisateurs non admins
+        if (user.role_id > 1) {
+          connection.query('INSERT INTO logins SET ?', trace, (err) => {
+            if (err) {
+              console.error('Error executing query:', err);
+              // Handle error if necessary
+            }
+          });
+        }
+
+        res.status(200).json(user);
+      });
     });
   });
 };
