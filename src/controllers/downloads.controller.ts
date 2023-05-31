@@ -1,22 +1,21 @@
 import { Request, Response } from 'express';
 import connection from '../database';
 
-//listes des utilisateurs avec l'entreprise associé
+//listes des téléchargements
 export const getDownloads = (req: Request, res: Response) => {
-  const downloads = connection.query('SELECT * FROM downloads ORDER BY created_at', (err, results: any) => {
+  connection.query('SELECT * FROM downloads ORDER BY created_at', (err, results: any) => {
     if (err) {
       console.error('Error executing query:', err);
       res.status(500).send('Error retrieving downloads');
       return;
     }
-   
-    res.json(downloads);
+    res.json(results);
   });
 };
 
 
 
-//Création d'un utilisateur
+//Ajout d'un téléchargement
 export const addDownload = async (req: Request, res: Response): Promise<void> => {
   const { name, surname, email, file_name, entreprise_id } = req.body;
 
@@ -26,8 +25,7 @@ export const addDownload = async (req: Request, res: Response): Promise<void> =>
   }
 
   
-
-  // Retrieve the social_reason from the entreprises table based on entrepriseId
+  // Récupération de l'entreprise (entreprise_id)
   connection.query('SELECT * FROM Entreprises WHERE id = ?', entreprise_id, (err, results: any) => {
     if (err) {
       console.error('Error executing query:', err);
@@ -43,6 +41,7 @@ export const addDownload = async (req: Request, res: Response): Promise<void> =>
     }
 
     const social_reason = results[0].social_reason;
+    const date = new Date();
 
   try {
 
@@ -51,7 +50,8 @@ export const addDownload = async (req: Request, res: Response): Promise<void> =>
       surname,
       email,
       file_name,
-      social_reason
+      social_reason,
+      date,
     };
 
     connection.query('INSERT INTO downloads SET ?', download, (err, results) => {

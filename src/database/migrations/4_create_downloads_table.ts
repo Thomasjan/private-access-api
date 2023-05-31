@@ -8,6 +8,7 @@ export const up = (knex: Knex): Knex.SchemaBuilder => {
     table.string('surname').notNullable();
     table.string('email').notNullable();
     table.string('file_name').notNullable();
+    table.string('date').notNullable();
     table.timestamps(true, true);
   });
 };

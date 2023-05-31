@@ -10,6 +10,8 @@ const port = 3000
 app.use(cors());
 app.use(bodyParser.json());
 
+app.use(express.urlencoded({ extended: true }));
+
 //router
 app.use('/api', apiRouter);
 
