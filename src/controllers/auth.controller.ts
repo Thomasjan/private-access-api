@@ -1,55 +1,90 @@
 import { Request, Response } from 'express';
 import connection from '../database';
-
+import bcrypt from 'bcrypt';
 
 export const login = (req: Request, res: Response): void => {
-    const { email, password } = req.body;
-  
-    if (!email || !password) {
-      res.status(400).send({message: 'Remplissez tous les champs !'});
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    res.status(400).send({ message: 'Remplissez tous les champs !' });
+    return;
+  }
+
+  connection.query('SELECT * FROM users WHERE email = ?', email, (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      res.status(500).send({ message: 'Server Error' });
       return;
     }
-  
-    connection.query('SELECT * FROM users WHERE email = ?', email, (err, results) => {
+
+    const user = (results as any)?.[0];
+
+    if (!user) {
+      res.status(404).send({ message: 'Utilisateur non trouvé' });
+      return;
+    }
+
+    bcrypt.compare(password, user.password, (err, passwordMatch) => {
       if (err) {
-        console.error('Error executing query:', err);
-        res.status(500).send({message: 'Server Error'});
-        return;
-      }
-  
-      const user = (results as any)?.[0];
-  
-      if (!user) {
-        res.status(404).send({message: 'Utilisateur non trouvé'});
-        return;
-      }
-  
-      if (user.password !== password) {
-        res.status(401).send({message: 'Mot de passe incorrect'});
+        console.error('Error comparing passwords:', err);
+        res.status(500).send({ message: 'Server Error' });
         return;
       }
 
-       // Add trace to database
+      if (!passwordMatch) {
+        res.status(401).send({ message: 'Mot de passe incorrect' });
+        return;
+      }
+
+      // Passwords match, continue with the login process
+
+      // Add trace to database
       const date = new Date();
-      const user_id = user.id; // Assuming there is an 'id' field in the 'users' table
-      const entreprise_id = user.entreprise_id; // Assuming there is an 'entrepriseId' field in the 'users' table
+      const name = user.name;
+      const surname = user.surname;
+      const entrepriseId = user.entreprise_id; // Assuming there is an 'entreprise_id' field in the 'users' table
 
-      const trace = { date, user_id, entreprise_id };
-      connection.query('INSERT INTO logins SET ?', trace, (err) => {
+      // Retrieve the social_reason from the entreprises table based on entrepriseId
+      connection.query('SELECT * FROM Entreprises WHERE id = ?', entrepriseId, (err, results: any) => {
         if (err) {
           console.error('Error executing query:', err);
           // Handle error if necessary
+          res.status(500).send({ message: 'Erreur lors de la récupération de la raison sociale' });
+          return;
         }
+
+        if (results.length === 0) {
+          // Handle case when no entreprise is found with the provided entrepriseId
+          res.status(404).send({ message: 'Aucune entreprise trouvée avec l\'ID fourni' });
+          return;
+        }
+
+        const social_reason = results[0].social_reason;
+        const category = results[0].category;
+        const subcategory = results[0].subcategory;
+
+        const trace = { date, name, surname, social_reason, category, subcategory };
+
+        // Ajouter les logs des logins pour les utilisateurs non admins
+        if (user.role_id > 1) {
+          connection.query('INSERT INTO logins SET ?', trace, (err) => {
+            if (err) {
+              console.error('Error executing query:', err);
+              // Handle error if necessary
+            }
+          });
+        }
+
+        res.status(200).json(user);
       });
-  
-      res.status(200).json(user);
     });
-  };
+  });
+};
 
   //Récupérer les logs des logins
   export const getLogins = (req: Request, res: Response): void => {
     connection.query(
-      'SELECT logins.date, logins.user_id, logins.entreprise_id, users.email, users.name, users.surname, entreprises.social_reason, entreprises.category, entreprises.subcategory FROM logins INNER JOIN users ON logins.user_id = users.id INNER JOIN entreprises ON users.entreprise_id = entreprises.id',
+      'SELECT * FROM logins',
       (err, results: any) => {
         if (err) {
           console.error('Error executing query:', err);
@@ -65,6 +100,8 @@ export const login = (req: Request, res: Response): void => {
               social_reason: row.social_reason,
               category: row.category,
               subcategory: row.subcategory,
+              // contract: row.contract,
+              // end_contract: row.end_contract,
             },
             user: {
               id: row.user_id,

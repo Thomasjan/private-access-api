@@ -1,17 +1,25 @@
 import { Request, Response } from 'express';
 import connection from '../database';
+import bcrypt from 'bcrypt';
 
-//listes des utilisateurs
-export const getUsers = ((req: Request, res: Response) => {
-  connection.query('SELECT * FROM users', (err, results) => {
+//listes des utilisateurs avec l'entreprise associé
+export const getUsers = (req: Request, res: Response) => {
+  connection.query('SELECT users.*, entreprises.* FROM users JOIN entreprises ON users.entreprise_id = entreprises.id', (err, results: any) => {
     if (err) {
       console.error('Error executing query:', err);
       res.status(500).send('Error retrieving users');
       return;
     }
-    res.json(results);
+
+    // Map the results to include the 'entreprise' object in each user
+    const users = results.map((user: any) => {
+      const { entreprise_id, ...userData } = user;
+      return { ...userData };
+    });
+
+    res.json(users);
   });
-});
+};
 
 export const getUser = (req: Request, res: Response) => {
   const userId = req.params.id; // Assuming the user ID is passed as a parameter in the URL
@@ -35,30 +43,39 @@ export const getUser = (req: Request, res: Response) => {
 };
 
 //Création d'un utilisateur
-export const addUser = (req: Request, res: Response): void => {
-  const { name, email, password } = req.body;
+export const addUser = async (req: Request, res: Response): Promise<void> => {
+  const { name, surname, email, password, entreprise_id, role_id } = req.body;
 
   if (!name || !email || !password) {
     res.status(400).send('Invalid request');
     return;
   }
 
-  const user = {
-    name,
-    email,
-    password,
-  };
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-  connection.query('INSERT INTO users SET ?', user, (err, results) => {
-    if (err) {
-      console.error('Error executing query:', err);
-      res.status(500).send('Error adding user');
-      return;
-    }
+    const user = {
+      name,
+      surname,
+      email,
+      password: hashedPassword,
+      entreprise_id,
+      role_id
+    };
 
-    const insertedUserId = (results as any)?.[0]?.insertId;
-    res.status(201).json({ id: insertedUserId, ...user });
-  });
+    connection.query('INSERT INTO users SET ?', user, (err, results) => {
+      if (err) {
+        console.error('Error executing query:', err);
+        res.status(500).send('Error adding user');
+        return;
+      }
+
+      const insertedUserId = (results as any)?.[0]?.insertId;
+      res.status(201).json({ id: insertedUserId, ...user });
+    });
+  } catch (error) {
+    console.error('Error hashing password:', error);
+    res.status(500).send('Error hashing password');
+  }
 };
-
 

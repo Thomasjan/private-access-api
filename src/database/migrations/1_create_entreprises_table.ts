@@ -16,3 +16,4 @@ export const up = (knex: Knex): Knex.SchemaBuilder => {
 export const down = (knex: Knex): Knex.SchemaBuilder => {
   return knex.schema.dropTable('entreprises');
 };
+
