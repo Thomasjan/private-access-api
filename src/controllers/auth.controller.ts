@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import connection from '../database';
-
+import bcrypt from 'bcrypt';
 
 export const login = (req: Request, res: Response): void => {
   const { email, password } = req.body;

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import connection from '../database';
+import bcrypt from 'bcrypt';
 
 //listes des utilisateurs
 export const getEntreprises = ((req: Request, res: Response) => {
@@ -91,16 +92,26 @@ export const addEntreprise = (req: Request, res: Response): void => {
 
 const createUser = (user: any): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
-    // Your logic to create the user and insert into the database
-    // Assuming you have a connection to the database, use the appropriate query to insert the user
 
-    connection.query('INSERT INTO Users SET ?', user, (err) => {
+    bcrypt.hash(user.password, 10, (err, hashedPassword) => {
       if (err) {
-        console.error('Error executing query:', err);
+        console.error('Error hashing password:', err);
         reject(err);
-      } else {
-        resolve();
+        return;
       }
+
+      // Replace the password with the hashed password
+      user.password = hashedPassword;
+
+      // Insert the user into the database
+      connection.query('INSERT INTO Users SET ?', user, (err) => {
+        if (err) {
+          console.error('Error executing query:', err);
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
     });
   });
 };

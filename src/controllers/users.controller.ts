@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import connection from '../database';
+import bcrypt from 'bcrypt';
 
 //listes des utilisateurs avec l'entreprise associé
 export const getUsers = (req: Request, res: Response) => {
@@ -42,7 +43,7 @@ export const getUser = (req: Request, res: Response) => {
 };
 
 //Création d'un utilisateur
-export const addUser = (req: Request, res: Response): void => {
+export const addUser = async (req: Request, res: Response): Promise<void> => {
   const { name, surname, email, password, entreprise_id, role_id } = req.body;
 
   if (!name || !email || !password) {
@@ -50,25 +51,31 @@ export const addUser = (req: Request, res: Response): void => {
     return;
   }
 
-  const user = {
-    name,
-    surname,
-    email,
-    password,
-    entreprise_id,
-    role_id
-  };
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-  connection.query('INSERT INTO users SET ?', user, (err, results) => {
-    if (err) {
-      console.error('Error executing query:', err);
-      res.status(500).send('Error adding user');
-      return;
-    }
+    const user = {
+      name,
+      surname,
+      email,
+      password: hashedPassword,
+      entreprise_id,
+      role_id
+    };
 
-    const insertedUserId = (results as any)?.[0]?.insertId;
-    res.status(201).json({ id: insertedUserId, ...user });
-  });
+    connection.query('INSERT INTO users SET ?', user, (err, results) => {
+      if (err) {
+        console.error('Error executing query:', err);
+        res.status(500).send('Error adding user');
+        return;
+      }
+
+      const insertedUserId = (results as any)?.[0]?.insertId;
+      res.status(201).json({ id: insertedUserId, ...user });
+    });
+  } catch (error) {
+    console.error('Error hashing password:', error);
+    res.status(500).send('Error hashing password');
+  }
 };
-
 
