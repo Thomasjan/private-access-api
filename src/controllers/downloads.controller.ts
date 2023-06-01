@@ -45,7 +45,7 @@ export const addDownload = async (req: Request, res: Response): Promise<void> =>
 
   try {
 
-    const download = {
+    const download: Object = {
       name,
       surname,
       email,
@@ -53,8 +53,10 @@ export const addDownload = async (req: Request, res: Response): Promise<void> =>
       social_reason,
       date,
     };
+    console.log(download);
 
-    connection.query('INSERT INTO downloads SET ?', download, (err, results) => {
+    const query = 'INSERT INTO downloads SET ?';
+    connection.query(query, download, (err, results) => {
       if (err) {
         console.error('Error executing query:', err);
         res.status(500).send('Error adding download');
