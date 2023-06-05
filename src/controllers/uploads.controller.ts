@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import connection from '../database';
 import multer from 'multer';
 
+
 const upload = multer({ dest: 'uploads/' });
 import uploadMiddleware from '../middlewares/upload.middleware';
 
