@@ -2,6 +2,10 @@ import { Request, Response } from 'express';
 import connection from '../database';
 import bcrypt from 'bcrypt';
 
+import nodemailer, { TransportOptions } from 'nodemailer';
+
+require('dotenv').config();
+
 //listes des utilisateurs avec l'entreprise associé
 export const getUsers = (req: Request, res: Response) => {
   connection.query('SELECT users.*, entreprises.* FROM users JOIN entreprises ON users.entreprise_id = entreprises.id', (err, results: any) => {
@@ -43,16 +47,18 @@ export const getUser = (req: Request, res: Response) => {
 };
 
 //Création d'un utilisateur
-export const addUser = async (req: Request, res: Response): Promise<void> => {
-  const { name, surname, email, password, entreprise_id, role_id } = req.body;
 
-  if (!name || !email || !password) {
-    res.status(400).send('Invalid request');
+export const addUser = async (req: Request, res: Response): Promise<void> => {
+  const { name, surname, email, entreprise_id, role_id } = req.body;
+
+  if (!name || !surname || !email || !entreprise_id || !role_id) {
+    res.status(400).send('Veillez remplir tous les champs');
     return;
   }
 
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const randomPassword = Math.random().toString(36).slice(-8);
+    const hashedPassword = await bcrypt.hash(randomPassword, 10);
 
     const user = {
       name,
@@ -63,7 +69,8 @@ export const addUser = async (req: Request, res: Response): Promise<void> => {
       role_id
     };
 
-    connection.query('INSERT INTO users SET ?', user, (err, results) => {
+    // Insert the user into the database
+    connection.query('INSERT INTO users SET ?', user, async (err, results) => {
       if (err) {
         console.error('Error executing query:', err);
         res.status(500).send('Error adding user');
@@ -71,6 +78,41 @@ export const addUser = async (req: Request, res: Response): Promise<void> => {
       }
 
       const insertedUserId = (results as any)?.[0]?.insertId;
+
+      // Envoie du mail de bienvenue avec le mot de passe
+      try {
+        
+        const transporter = nodemailer.createTransport({
+          host: process.env.MAIL_HOST,
+          port: process.env.MAIL_PORT,
+          auth: {
+            user: process.env.MAIL_USER,
+            pass: process.env.MAIL_PASSWORD
+          }
+        }as TransportOptions);
+
+        const mailOptions = {
+          from: 'Gestimum.com',
+          to: email,
+          subject: 'Welcome to the application',
+          html: `
+            <html>
+              <body>
+                <h1 style="color: #333; text-align: center">Bonjour ${name},</h1>
+                
+                <p style="color: #666;">Votre compte d'accés à l'espace privée gestimum a été créé.</p>
+                <p style="color: #666;">Votre mot de passe: ${randomPassword}</p>
+              </body>
+            </html>
+          `,
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log('Email sent successfully');
+      } catch (error) {
+        console.error('Error sending email:', error);
+      }
+
       res.status(201).json({ id: insertedUserId, ...user });
     });
   } catch (error) {
