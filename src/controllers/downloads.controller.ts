@@ -12,36 +12,10 @@ export const getDownloads = (req: Request, res: Response) => {
       res.status(500).send('Error retrieving downloads');
       return;
     }
-
-    results.forEach((result: any) => {
-      const filePath = path.join('src/database/uploads', result.file_path);
-
-      fs.access(filePath, fs.constants.R_OK, (err) => {
-        if (err) {
-          console.error('Error accessing file:', err);
-          res.status(404).send('File not found');
-          return;
-        }
-
-        let fileName = result.file_name;
-        if (!fileName.toLowerCase().endsWith('.exe')) {
-          fileName += '.exe';
-        }
-
-        res.download(filePath, fileName, (err) => {
-          if (err) {
-            console.error('Error downloading file:', err);
-            res.status(500).send('Error downloading file');
-          }
-        });
-      });
-    });
+    
     res.json(results);
   });
 };
-
-
-
 
 
 
