@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import connection from '../database';
+import {connection} from '../database';
 import bcrypt from 'bcrypt';
 
 //listes des utilisateurs

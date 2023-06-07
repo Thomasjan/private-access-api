@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import connection from '../database';
+import {connection} from '../database';
 
 import fs from 'fs';
 import path from 'path';
