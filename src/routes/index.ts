@@ -8,6 +8,7 @@ import RolesRoute from './roles.route';
 import DownloadsRoute from './downloads.route';
 import UploadsRoute from './uploads.route';
 import Gestimum from './gestimum.route'
+import PdfsRoute from './pdfs.route'
 
 const router = Router();
 
@@ -19,5 +20,6 @@ router.use('/roles', RolesRoute);
 router.use('/downloads', DownloadsRoute);
 router.use('/uploads', UploadsRoute);
 router.use('/gestimum', Gestimum);
+router.use('/pdfs', PdfsRoute);
 
 export default router;

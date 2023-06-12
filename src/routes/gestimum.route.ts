@@ -2,9 +2,9 @@ import { Router } from 'express';
 
 const router = Router();
 
-import { getGestimumUsers } from '../controllers/gestimum.controller';
+import { getGestimumClients } from '../controllers/gestimum.controller';
 
-router.get('/getGestimumUsers', getGestimumUsers);
+router.get('/getGestimumClients', getGestimumClients);
 
 
 export default router;

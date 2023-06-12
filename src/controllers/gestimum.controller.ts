@@ -4,7 +4,7 @@ import {connectionGestimum, executeQuery} from '../database';
 require('dotenv').config();
 
 //listes des utilisateurs avec l'entreprise associé
-export const getGestimumUsers = async (req: Request, res: Response) => {
+export const getGestimumClients = async (req: Request, res: Response) => {
     try {
         const query = 'SELECT PCF_CODE, PCF_RS, PCF_EMAIL, PCF_RUE, PCF_CP, PCF_VILLE, PAY_CODE, PCF_TYPE FROM TIERS ORDER BY PCF_RS, PCF_TYPE OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY';
       const tiers = await executeQuery(query);
