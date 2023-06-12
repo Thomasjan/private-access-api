@@ -4,7 +4,7 @@ export const up = (knex: Knex): Knex.SchemaBuilder => {
   return knex.schema.createTable('entreprises', (table) => {
     table.increments('id').primary();
     table.string('social_reason').notNullable();
-    table.integer('code_client').notNullable();
+    table.string('code_client').notNullable();
     table.string('category').notNullable();
     table.string('subcategory').notNullable();
     table.string('contract').nullable();
