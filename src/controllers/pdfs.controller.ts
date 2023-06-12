@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import e, { Request, Response } from 'express';
 import {connection} from '../database';
 
 
@@ -38,6 +38,20 @@ export const addSupportPdf = (req: Request, res: Response) => {
     if (err) {
       console.error('Error executing query:', err);
       res.status(500).send('Error adding a pdf');
+      return;
+    }
+
+    res.json(results);
+  });
+}
+
+export const deleteSupportPdf = (req: Request, res: Response) => {
+  const id = req.params.id;
+
+  connection.query('DELETE FROM Support_pdfs WHERE id = ?', [id], (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      res.status(500).send('Error deleting a pdf');
       return;
     }
 
