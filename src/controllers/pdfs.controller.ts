@@ -1,4 +1,4 @@
-import e, { Request, Response } from 'express';
+import { Request, Response } from 'express';
 import {connection} from '../database';
 
 
@@ -29,11 +29,12 @@ export const getAideVentePdfs = (req: Request, res: Response) => {
   });
 };
 
+//Edition PDF
 export const editPdf = (req: Request, res: Response) => {
   const id = req.params.id;
-  const newSupportPdf = req.body;
+  const newPdf = req.body;
 
-  connection.query('UPDATE pdfs set ? WHERE id = ?', [newSupportPdf, id], (err, results) => {
+  connection.query('UPDATE pdfs set ? WHERE id = ?', [newPdf, id], (err, results) => {
     if (err) {
       console.error('Error executing query:', err);
       res.status(500).send('Error updating a pdf');
@@ -44,10 +45,11 @@ export const editPdf = (req: Request, res: Response) => {
   });
 }
 
+//Ajout PDF
 export const addPdf = (req: Request, res: Response) => {
-  const newSupportPdf = req.body;
+  const newPdf = req.body;
 
-  connection.query('INSERT INTO pdfs set ?', newSupportPdf, (err, results) => {
+  connection.query('INSERT INTO pdfs set ?', newPdf, (err, results) => {
     if (err) {
       console.error('Error executing query:', err);
       res.status(500).send('Error adding a pdf');
@@ -58,6 +60,7 @@ export const addPdf = (req: Request, res: Response) => {
   });
 }
 
+//Suppression PDF
 export const deletePdf = (req: Request, res: Response) => {
   const id = req.params.id;
 
@@ -71,22 +74,4 @@ export const deletePdf = (req: Request, res: Response) => {
     res.json(results);
   });
 }
-
-
-
-
-
-//listes des utilisateurs avec l'entreprise associé
-// export const getSupportsPdfs = (req: Request, res: Response) => {
-//   connection.query('SELECT * FROM Support_pdfs', (err, results: any) => {
-//     if (err) {
-//       console.error('Error executing query:', err);
-//       res.status(500).send('Error retrieving pdfs');
-//       return;
-//     }
-
-//     res.json(results);
-//   });
-// };
-
 
