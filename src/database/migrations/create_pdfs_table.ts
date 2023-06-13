@@ -5,7 +5,7 @@ export const up = async (knex: Knex): Promise<void> => {
     table.increments('id').primary();
     table.string('ref').notNullable();
     table.string('title').notNullable();
-    table.string('category').nullable();
+    table.string('category').notNullable();
     table.string('link').notNullable();
     table.timestamps(true, true);
   });
