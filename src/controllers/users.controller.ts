@@ -9,7 +9,7 @@ require('dotenv').config();
 
 //listes des utilisateurs avec l'entreprise associé
 export const getUsers = (req: Request, res: Response) => {
-  connection.query('SELECT users.*, entreprises.* FROM users JOIN entreprises ON users.entreprise_id = entreprises.id', (err, results: any) => {
+  connection.query('SELECT users.*, users.created_at AS lastCreated, entreprises.* FROM users JOIN entreprises ON users.entreprise_id = entreprises.id ORDER BY lastCreated DESC', (err, results: any) => {
     if (err) {
       console.error('Error executing query:', err);
       res.status(500).send('Error retrieving users');

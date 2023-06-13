@@ -85,7 +85,7 @@ export const login = (req: Request, res: Response): void => {
   //Récupérer les logs des logins
   export const getLogins = (req: Request, res: Response): void => {
     connection.query(
-      'SELECT * FROM logins',
+      'SELECT * FROM logins ORDER BY `created_at` DESC',
       (err, results: any) => {
         if (err) {
           console.error('Error executing query:', err);
