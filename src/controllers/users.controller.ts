@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import {connection} from '../database';
 import bcrypt from 'bcrypt';
 
+import colors from 'colors';
 import nodemailer, { TransportOptions } from 'nodemailer';
 
 require('dotenv').config();
@@ -20,6 +21,7 @@ export const getUsers = (req: Request, res: Response) => {
       const { entreprise_id, ...userData } = user;
       return { ...userData };
     });
+    console.log(colors.green(`Retrieved ${colors.yellow(users.length)} users`));
 
     res.json(users);
   });
@@ -42,6 +44,7 @@ export const getUser = (req: Request, res: Response) => {
     }
 
     const user = (results as any)?.[0]
+    console.log(colors.green(`Retrieved user ${colors.yellow(user.name)} ${colors.yellow(user.surname)}`));
     res.json(user);
   });
 };
@@ -114,6 +117,7 @@ export const addUser = async (req: Request, res: Response): Promise<void> => {
       }
 
       res.status(201).json({ id: insertedUserId, ...user });
+      console.log(colors.green(`Added user ${colors.yellow(name)} ${colors.yellow(surname)}`));
     });
   } catch (error) {
     console.error('Error hashing password:', error);

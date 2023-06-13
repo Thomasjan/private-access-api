@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import {connection} from '../database';
 
-
+import colors from 'colors';
 
 //listes des pdfs de la page Support
 export const getSupportsPdfs = (req: Request, res: Response) => {
@@ -12,6 +12,7 @@ export const getSupportsPdfs = (req: Request, res: Response) => {
       return;
     }
 
+    console.log(colors.green(`Retrieved ${colors.yellow(results.length)} pdfs`));
     res.json(results);
   });
 };
@@ -25,6 +26,7 @@ export const getAideVentePdfs = (req: Request, res: Response) => {
       return;
     }
 
+    console.log(colors.green(`Retrieved ${colors.yellow(results.length)} pdfs`));
     res.json(results);
   });
 };
@@ -41,6 +43,7 @@ export const editPdf = (req: Request, res: Response) => {
       return;
     }
 
+    console.log(colors.green(`Updated pdf ${colors.yellow(newPdf.title)} with id ${colors.yellow(id)}`));
     res.json(results);
   });
 }
@@ -56,6 +59,7 @@ export const addPdf = (req: Request, res: Response) => {
       return;
     }
 
+    console.log(colors.green(`Added pdf ${colors.yellow(newPdf.title)}`));
     res.json(results);
   });
 }
@@ -71,6 +75,7 @@ export const deletePdf = (req: Request, res: Response) => {
       return;
     }
 
+    console.log(colors.green(`Deleted pdf with id ${colors.yellow(id)}`));
     res.json(results);
   });
 }

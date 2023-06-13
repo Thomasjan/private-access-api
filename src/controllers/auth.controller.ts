@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import {connection} from '../database';
 import bcrypt from 'bcrypt';
+import colors from 'colors';
 
 export const login = (req: Request, res: Response): void => {
   const { email, password } = req.body;
@@ -74,7 +75,7 @@ export const login = (req: Request, res: Response): void => {
             }
           });
         }
-
+        console.log(colors.green(`User ${colors.yellow(user.email)} logged in`));
         res.status(200).json(user);
       });
     });
@@ -112,6 +113,7 @@ export const login = (req: Request, res: Response): void => {
           };
         });
   
+        console.log(colors.green(`Retrieved ${colors.yellow(logins.length)} logins`));
         res.status(200).json(logins);
       }
     );

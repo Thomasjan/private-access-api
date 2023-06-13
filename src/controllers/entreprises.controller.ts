@@ -2,14 +2,16 @@ import { Request, Response } from 'express';
 import {connection} from '../database';
 import bcrypt from 'bcrypt';
 
+import colors from 'colors';
 //listes des utilisateurs
 export const getEntreprises = ((req: Request, res: Response) => {
-  connection.query('SELECT * FROM Entreprises', (err, results) => {
+  connection.query('SELECT * FROM Entreprises', (err, results: any) => {
     if (err) {
       console.error('Error executing query:', err);
       res.status(500).send('Erreur de chargements des entreprises');
       return;
     }
+    console.log(colors.green(`Retrieved ${colors.yellow(results.length)} entreprises`));
     res.json(results);
   });
 });
@@ -81,6 +83,7 @@ export const addEntreprise = (req: Request, res: Response): void => {
     createUser(user)
       .then(() => {
         res.status(201).json({ id: insertedEntrepriseId, ...entreprise });
+        console.log(colors.green(`Created entreprise ${colors.yellow(entreprise.social_reason)} with id ${colors.yellow(insertedEntrepriseId)}`));
       })
       .catch((error) => {
         console.error('Error creating user:', error);
@@ -143,6 +146,7 @@ export const updateEntreprise = (req: Request, res: Response): void => {
         return;
       }
 
+      console.log(colors.green(`Updated entreprise ${colors.yellow(entreprise.social_reason)} with id ${colors.yellow(req.params.id)}`));
       res.status(200).json({ id: req.params.id, ...entreprise });
     }
   );
@@ -177,6 +181,7 @@ export const deleteEntreprise = (req: Request, res: Response): void => {
         return;
       }
 
+      console.log(colors.green(`Deleted entreprise with id ${colors.yellow(entrepriseId)}`));
       res.status(200).json({ id: entrepriseId });
     });
   });
