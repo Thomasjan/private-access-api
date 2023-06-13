@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import {connection} from '../database';
 import multer from 'multer';
 
+import colors from 'colors';
 
 const upload = multer({ dest: 'uploads/' });
 import uploadMiddleware from '../middlewares/upload.middleware';
@@ -14,6 +15,7 @@ export const getUploads = (req: Request, res: Response) => {
       res.status(500).send('Error retrieving downloads');
       return;
     }
+    console.log(colors.green(`Retrieved ${colors.yellow(results.length)} downloads`));
     res.json(results);
   });
 };
@@ -29,16 +31,12 @@ export const addUpload = async (req: Request, res: Response,): Promise<void> => 
       return;
     }
 
-    console.log('body', req.body)
-    console.log('files', req.files)
-
     // if (!version || !type || !description || !file || !file_name || !image || !image_path || !file_path) {
     //     res.status(400).send({ message: 'Missing fields' });
     //     return;
     // }
     
     
-      console.log('File uploaded successfully');
   
       const upload = {
         version,
@@ -59,6 +57,7 @@ export const addUpload = async (req: Request, res: Response,): Promise<void> => 
           res.status(500).send('Error adding upload');
           return;
         }
+        console.log(colors.green(`Added upload ${colors.yellow(upload.version)}`));
         res.status(201).send({ message: 'Upload added' });
     });
   };

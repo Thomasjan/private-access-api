@@ -1,5 +1,6 @@
 import mysql from 'mysql2';
 require('dotenv').config();
+import colors from 'colors';
 import * as sql from 'mssql';
 
 
@@ -17,7 +18,7 @@ import * as sql from 'mssql';
       console.error('Error connecting to the database:', err);
       return;
     }
-    console.log('Connected to the database!');
+    console.log(colors.italic.magenta('Connected to MySQL database!'));
   });
 
 
@@ -37,6 +38,9 @@ import * as sql from 'mssql';
   };
 
 const connectionGestimum = new sql.ConnectionPool(dbConfig);
+console.log(colors.italic.magenta('Connected to SQL-SRV database!'));
+
+
 
 const executeQuery = async (query: string): Promise<any> => {
 

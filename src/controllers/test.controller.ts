@@ -1,7 +1,3 @@
-// import { RessourceBody } from 'src/models/ressource.model';
-// import {
-//   getAllRessources,
-// } from '../services/ressource.service';
 
 import express, { Request, Response } from 'express';
 

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import {connection} from '../database';
 
+import colors from 'colors';
 
 
 //listes des formations et durée
@@ -12,6 +13,7 @@ export const getFormations = (req: Request, res: Response) => {
       return;
     }
 
+    console.log(colors.green(`Retrieved ${colors.yellow(results.length)} formations`));
     res.json(results);
   });
 };
@@ -28,6 +30,7 @@ export const editFormation = (req: Request, res: Response) => {
       return;
     }
 
+    console.log(colors.green(`Updated formation ${colors.yellow(newFormation.title)} with id ${colors.yellow(id)}`));
     res.json(results);
   });
 }
@@ -43,6 +46,7 @@ export const addFormation = (req: Request, res: Response) => {
       return;
     }
 
+    console.log(colors.green(`Added formation ${colors.yellow(newFormation.title)}`));
     res.json(results);
   });
 }
@@ -58,6 +62,7 @@ export const deleteFormation = (req: Request, res: Response) => {
       return;
     }
 
+    console.log(colors.green(`Deleted formation with id ${colors.yellow(id)}`));
     res.json(results);
   });
 }

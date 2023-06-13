@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 import {connection} from '../database';
 
-import fs from 'fs';
-import path from 'path';
+import colors from 'colors';
 
 //listes des téléchargements
 export const getDownloads = (req: Request, res: Response) => {
@@ -12,7 +11,7 @@ export const getDownloads = (req: Request, res: Response) => {
       res.status(500).send('Error retrieving downloads');
       return;
     }
-    
+    console.log(colors.green(`Retrieved ${colors.yellow(results.length)} downloads`));
     res.json(results);
   });
 };
@@ -69,6 +68,7 @@ export const addDownload = async (req: Request, res: Response): Promise<void> =>
 
       const insertDownloadId = (results as any)?.[0]?.insertId;
       res.status(201).json({ id: insertDownloadId, ...download });
+      console.log(colors.green(`Download ${colors.yellow(insertDownloadId)} added`));
     });
   } catch (error) {
     console.error('Error adding download:', error);

@@ -1,6 +1,9 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
+
 import bodyParser from 'body-parser';
+import colors from 'colors';
+
 import path from 'path';
 
 import axios from 'axios';
@@ -22,7 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const uploadsPath = path.join(__dirname, 'database', 'uploads');
 
-console.log('Uploads directory:', uploadsPath);
+// console.log('Uploads directory:', uploadsPath);
 
 const ulpoadUrl = '/files/uploads';
 app.use(ulpoadUrl, express.static(uploadsPath));
@@ -58,10 +61,9 @@ app.get('/test', (req: Request, res: Response) => {
   });
 
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
-
-
-
+  app.listen(port, () => {
+    console.log(colors.bold.cyan.underline(`Gestimum private-access runing on port ${port}!`));
+  });
 
 
 

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import {connectionGestimum, executeQuery} from '../database';
 
+import colors from 'colors';
 require('dotenv').config();
 
 //listes des utilisateurs avec l'entreprise associé
