@@ -3,9 +3,11 @@ import {connection} from '../database';
 import bcrypt from 'bcrypt';
 
 import colors from 'colors';
+
+
 //listes des utilisateurs
 export const getEntreprises = ((req: Request, res: Response) => {
-  connection.query('SELECT * FROM Entreprises', (err, results: any) => {
+  connection.query('SELECT * FROM Entreprises ORDER BY `created_at` DESC', (err, results: any) => {
     if (err) {
       console.error('Error executing query:', err);
       res.status(500).send('Erreur de chargements des entreprises');
