@@ -8,7 +8,8 @@ export const up = (knex: Knex): Knex.SchemaBuilder => {
     table.string('file_path').notNullable();
     table.string('type').notNullable();
     table.string('image_path').notNullable();
-    table.string('description').notNullable();
+    table.text('description').notNullable();
+    table.text('patch').nullable();
     table.timestamps(true, true);
   });
 };
