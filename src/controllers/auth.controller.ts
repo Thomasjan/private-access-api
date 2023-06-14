@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import {connection} from '../database';
 import bcrypt from 'bcrypt';
-import colors from 'colors';
+import colors, { random } from 'colors';
+import nodemailer, { TransportOptions } from 'nodemailer';
 
 export const login = (req: Request, res: Response): void => {
   const { email, password } = req.body;
@@ -118,4 +119,70 @@ export const login = (req: Request, res: Response): void => {
       }
     );
   };
+
+
+
+  export const forgotPassword = async (req: Request, res: Response): Promise<void> => {
+    // Implement logic for generating a random password
+    const randomPassword = Math.random().toString(36).slice(-8);
+    const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
+    const email = req.body.email;
+    await updateUserPassword(email, hashedPassword);
+  
+    // Implement logic for sending the password reset email
+    const emailSent = await sendPasswordResetEmail(req.body.email, randomPassword);
+  
+    if (emailSent) {
+      res.status(200).json({ message: 'Password reset email sent.' });
+    } else {
+      res.status(500).json({ error: 'Failed to send password reset email.' });
+    }
+  };
+
+  export const sendPasswordResetEmail = async (email: string, password: string): Promise<boolean> => {
+    // Implement logic for sending the email using a mail delivery service or library
+    // For example, using Nodemailer
+    
+    try {
+        
+      const transporter = nodemailer.createTransport({
+        host: process.env.MAIL_HOST,
+        port: process.env.MAIL_PORT,
+        auth: {
+          user: process.env.MAIL_USER,
+          pass: process.env.MAIL_PASSWORD
+        }
+      }as TransportOptions);
+
+      const mailOptions = {
+        from: 'Gestimum.com',
+        to: email,
+        subject: 'Réinitialisation de votre mot de passe',
+        text: `Votre nouveau mot de passe : ${password}`,
+      };
+
+      await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully');
+      return true;
+    } catch (error) {
+      console.error('Error sending email:', error);
+      return false;
+    }
+  };
+
+  export const updateUserPassword = async (email: string, hashedPassword: string): Promise<void> => {
+    // Implement logic for updating the user's password
+    connection.query(
+      'UPDATE users SET password = ? WHERE email = ?',
+      [hashedPassword, email],
+      (err, results) => {
+        if (err) {
+          console.error('Error executing query:', err);
+          // Handle error if necessary
+        }
+      }
+    );
+  };
+
   
