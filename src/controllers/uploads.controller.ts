@@ -9,7 +9,7 @@ import uploadMiddleware from '../middlewares/upload.middleware';
 
 //listes des téléchargements
 export const getUploads = (req: Request, res: Response) => {
-  connection.query('SELECT * FROM uploads ORDER BY created_at', (err, results: any) => {
+  connection.query('SELECT * FROM uploads ORDER BY created_at DESC', (err, results: any) => {
     if (err) {
       console.error('Error executing query:', err);
       res.status(500).send('Error retrieving downloads');
@@ -20,24 +20,33 @@ export const getUploads = (req: Request, res: Response) => {
   });
 };
 
-
+//Derniere version
+export const getLastUpload = (req: Request, res: Response) => {
+  connection.query('SELECT * FROM uploads ORDER BY created_at DESC LIMIT 1', (err, results: any) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      res.status(500).send('Error retrieving downloads');
+      return;
+    }
+    console.log(colors.green(`Retrieved ${colors.yellow(results)} downloads`));
+    res.json(results[0]);
+  });
+};
 
 //Ajout d'un téléchargement
 export const addUpload = async (req: Request, res: Response,): Promise<void> => {
-    const { version, type, description, file_name, image_path, file_path } = req.body;
+    const { version, type, description, file_name } = req.body;
 
     if (!req.files || !('file' in req.files) || !('image' in req.files)) {
       res.status(400).send('No file or image uploaded');
       return;
     }
 
-    // if (!version || !type || !description || !file || !file_name || !image || !image_path || !file_path) {
-    //     res.status(400).send({ message: 'Missing fields' });
-    //     return;
-    // }
+    if (!version || !type || !description  || !file_name  ) {
+        res.status(400).send({ message: 'Missing fields' });
+        return;
+    }
     
-    
-  
       const upload = {
         version,
         type,
@@ -45,8 +54,6 @@ export const addUpload = async (req: Request, res: Response,): Promise<void> => 
         file_name,
         image_path: req.files['image'][0].filename,
         file_path: req.files['file'][0].filename,
-        // image_path: req.files['image'][0].path,
-        // file_path: req.files['file'][0].path,
       };
 
       console.log(upload)
@@ -61,6 +68,4 @@ export const addUpload = async (req: Request, res: Response,): Promise<void> => 
         res.status(201).send({ message: 'Upload added' });
     });
   };
-  
-  
 

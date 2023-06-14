@@ -7,13 +7,14 @@ import path from 'path';
 
 const router = Router();
 
-import { getUploads, addUpload  } from '../controllers/uploads.controller';
+import { getUploads, getLastUpload, addUpload  } from '../controllers/uploads.controller';
 
 router.get('/getUploads', getUploads);
-// router.post('/addUpload',upload.fields([{name: 'file', maxCount: 1},{name: 'image', maxCount: 1} ]), addUpload);
+router.get('/getLastUpload', getLastUpload);
 
 router.post('/addUpload', upload.fields([{ name: 'file', maxCount: 1 }, { name: 'image', maxCount: 1 }]), (req, res) => {
-    // Retrieve the uploaded files
+  // Récupère les fichiers et les renomme
+
     const files = req.files;
   
     if (files && ('file' in files) && ('image' in files)) {
@@ -22,8 +23,8 @@ router.post('/addUpload', upload.fields([{ name: 'file', maxCount: 1 }, { name: 
       
       const originalName = file.originalname;
       const ext = path.extname(originalName);
-      const newName = `${req.body.file_name}_${req.body.version}${ext}`; // Replace with your desired new filename
-      const newImageName = `${req.body.file_name}_${req.body.version}_image`; // Replace with your desired new filename
+      const newName = `${req.body.file_name}_${req.body.version}${ext}`; // Nouveau nom du fichier
+      const newImageName = `${req.body.file_name}_${req.body.version}_image`; // Nouveau nom de l'image
       // Rename the file using fs.renameSync
       const oldPath = file.path;
       const newPath = path.join(file.destination, newName);
@@ -34,7 +35,7 @@ router.post('/addUpload', upload.fields([{ name: 'file', maxCount: 1 }, { name: 
       fs.renameSync(oldImagePath, newImagePath);
 
   
-      // Update the file object with the new path and filename
+      // mis à jour des propriétés du fichier
         file.filename = newName;
         file.path = newPath;
 
@@ -43,7 +44,7 @@ router.post('/addUpload', upload.fields([{ name: 'file', maxCount: 1 }, { name: 
 
     }
   
-    // Call the addUpload controller function with the updated file object
+    // Appel de la fonction addUpload
     addUpload(req, res);
   });
 export default router;
