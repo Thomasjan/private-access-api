@@ -31,6 +31,20 @@ export const getAideVentePdfs = (req: Request, res: Response) => {
   });
 };
 
+//listes des pdfs de la page Aide à la vente
+export const getFormationPdfs = (req: Request, res: Response) => {
+  connection.query("SELECT * FROM pdfs WHERE ref = 'formation'", (err, results: any) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      res.status(500).send('Error retrieving pdfs');
+      return;
+    }
+
+    console.log(colors.green(`Retrieved ${colors.yellow(results.length)} pdfs`));
+    res.json(results);
+  });
+};
+
 //Edition PDF
 export const editPdf = (req: Request, res: Response) => {
   const id = req.params.id;
