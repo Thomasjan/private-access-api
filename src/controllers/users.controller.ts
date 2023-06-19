@@ -125,3 +125,48 @@ export const addUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+
+export const updatePassword = async (req: Request, res: Response): Promise<void> => {
+  const { password, newPassword } = req.body;
+  const userId = req.params.id;
+
+  if (!password || !newPassword) {
+    res.status(400).send('Veillez remplir tous les champs');
+    return;
+  }
+
+  connection.query('SELECT * FROM users WHERE id = ?', userId, async (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      res.status(500).send('Error retrieving user');
+      return;
+    }
+
+    if (Array.isArray(results) && results.length === 0) {
+      res.status(404).send('User not found');
+      return;
+    }
+
+    const user = (results as any)?.[0];
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      res.status(401).send('Invalid password');
+      return;
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    connection.query('UPDATE users SET password = ? WHERE id = ?', [hashedPassword, userId], (err, results) => {
+      if (err) {
+        console.error('Error executing query:', err);
+        res.status(500).send('Error updating password');
+        return;
+      }
+
+      res.status(200).send('Password updated successfully');
+    });
+  });
+     
+};
