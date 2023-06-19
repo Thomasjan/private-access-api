@@ -10,6 +10,7 @@ import UploadsRoute from './uploads.route';
 import Gestimum from './gestimum.route'
 import PdfsRoute from './pdfs.route'
 import ForamtionsRoute from './formations.route'
+import LinkedinRoute from './linkedin.route'
 
 const router = Router();
 
@@ -23,5 +24,6 @@ router.use('/uploads', UploadsRoute);
 router.use('/gestimum', Gestimum);
 router.use('/pdfs', PdfsRoute);
 router.use('/formations', ForamtionsRoute);
+router.use('/linkedin', LinkedinRoute);
 
 export default router;

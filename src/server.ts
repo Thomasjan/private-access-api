@@ -60,28 +60,26 @@ app.get('/test', (req: Request, res: Response) => {
     }
   });
 
+//LINKEDIN
+  axios.get('http://localhost:3000/api/linkedin/getLinkedinPosts')
+  .then((response) => {
+    // console.log(response.data);
+    console.log(colors.bold.cyan(`getLinkedinPosts !`));
+  })
+  .catch((error) => {
+    console.log(error);
+  });
 
   app.listen(port, () => {
-    console.log(colors.bold.cyan.underline(`Gestimum private-access runing on port ${port}!`));
+    console.log(colors.bold.red.underline(`Gestimum private-access runing on port ${port}!`));
   });
 
 
+//GOOD
+//https://api.linkedin.com/v2/shares?q=owners&owners=urn:li:organization:1201305&sortBy=LAST_MODIFIED&sharesPerOwner=${count}&start=0
 
 
-
-// app.get('/posts', async (req: Request, res: Response) => {
-//     try {
-//       const token = linkedin_access_token; // Replace with your LinkedIn access token
-//       const apiUrl = 'https://api.linkedin.com/v2/me';
-//       const response = await axios.get(`${apiUrl}`, {
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//         },
-//       });
-//       const posts = response.data.elements;
-//       res.json(posts);
-//     } catch (error) {
-//       console.error('Error retrieving LinkedIn posts:', error);
-//       res.status(500).json({ fail: 'Failed to retrieve LinkedIn posts', error });
-//     }
-//   });
+//TEST
+// https://api.linkedin.com/v2/adAnalyticsV2?q=analytics&pivot=SHARE&timeGranularity=DAILY&shares=List(urn:share:XXXX)
+//https://api.linkedin.com/v2/ugcPosts?q=authors&authors=List(urn%3Ali%3Aorganization%3A1201305)&sortBy=LAST_MODIFIED
+//https://api.linkedin.com/rest/posts?author={encoded person urn or organization urn like urn%3Ali%3Aperson%3A5abc_dEfgH or urn%3Ali%3Aorganization%3A2414183}&q=author&count=10
