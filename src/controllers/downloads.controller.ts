@@ -56,7 +56,6 @@ export const addDownload = async (req: Request, res: Response): Promise<void> =>
       social_reason,
       date,
     };
-    console.log(download);
 
     const query = 'INSERT INTO downloads SET ?';
     connection.query(query, download, (err, results) => {
