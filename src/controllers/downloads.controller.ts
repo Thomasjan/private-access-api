@@ -68,7 +68,7 @@ export const addDownload = async (req: Request, res: Response): Promise<void> =>
 
       const insertDownloadId = (results as any)?.[0]?.insertId;
       res.status(201).json({ id: insertDownloadId, ...download });
-      console.log(colors.green(`Download ${colors.yellow(insertDownloadId)} added`));
+      console.log(colors.green(`Download ${colors.yellow(file_name)} added`));
     });
   } catch (error) {
     console.error('Error adding download:', error);
