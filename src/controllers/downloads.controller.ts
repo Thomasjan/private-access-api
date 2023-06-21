@@ -5,7 +5,7 @@ import colors from 'colors';
 
 //listes des téléchargements
 export const getDownloads = (req: Request, res: Response) => {
-  connection.query('SELECT * FROM downloads ORDER BY created_at', (err, results: any) => {
+  connection.query('SELECT * FROM downloads ORDER BY created_at DESC', (err, results: any) => {
     if (err) {
       console.error('Error executing query:', err);
       res.status(500).send('Error retrieving downloads');
