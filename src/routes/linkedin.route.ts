@@ -2,8 +2,9 @@ import { Router } from 'express';
 
 const router = Router();
 
-import { getLinkedinPosts } from '../controllers/linkedin.controller';
+import { getLinkedinPosts, refreshLinkedinToken } from '../controllers/linkedin.controller';
 
 router.get('/getLinkedinPosts', getLinkedinPosts);
+router.get('/refreshLinkedinToken', refreshLinkedinToken);
 
 export default router;

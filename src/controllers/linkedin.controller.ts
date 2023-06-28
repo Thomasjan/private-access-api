@@ -5,8 +5,12 @@ import axios from 'axios';
 
 
   export const getLinkedinPosts = async (req: Request, res: Response) => {
-    const accessToken = process.env.LINKEDIN_ACCESS_TOKEN;
-    const page = 1; // Page de départ
+
+    const accessToken = await getLinkdinToken();
+    // console.log(accessToken)
+
+    // const accessToken = process.env.LINKEDIN_ACCESS_TOKEN;
+    
     const count = 100; // Nombre de résultats par page (MAX 100)
 
 
@@ -70,3 +74,67 @@ import axios from 'axios';
 
   //https://api.linkedin.com/v2/shares?q=owners&owners=urn:li:organization:1201305&sharesPerOwner=1000
   
+
+  const getLinkdinToken = async () => {
+    return new Promise((resolve, reject) => {
+      connection.query("SELECT * FROM variables WHERE title='LINKEDIN_ACCESS_TOKEN'", (err, results: any) => {
+        if (err) {
+          console.error('Error executing query:', err);
+          reject('Error retrieving LINKEDIN_TOKEN');
+          return;
+        }
+  
+        resolve(results[0].value);
+      });
+    });
+  };
+
+
+
+  export const refreshLinkedinToken = async (req: Request, res: Response) => {
+    const refreshToken = await getRefreshLinkdinToken();
+
+    try{
+      const response = await axios.post(`https://www.linkedin.com/oauth/v2/accessToken?grant_type=refresh_token&client_id=78vldbca3nkset&client_secret=cjHAyKajnjBxMypB&refresh_token=${refreshToken}`);
+      const accessToken = response.data.access_token;
+      const newRefreshToken = response.data.refresh_token;
+      // console.log('accessToken', accessToken)
+      // console.log('newRefreshToken', newRefreshToken)
+
+      connection.query(`UPDATE variables SET value='${accessToken}' WHERE title='LINKEDIN_ACCESS_TOKEN'`, (err, results: any) => {
+        if (err) {
+          console.error('Error executing query:', err);
+          res.status(500).json(err);
+        }
+      });
+
+      connection.query(`UPDATE variables SET value='${newRefreshToken}' WHERE title='LINKEDIN_REFRESH_TOKEN'`, (err, results: any) => {
+        if (err) {
+          console.error('Error executing query:', err);
+          res.status(500).json(err);
+        }
+      });
+
+      console.log(colors.bold.cyan(`refreshLinkedinToken!`));
+      return res.status(200).json({accessToken, newRefreshToken});
+    }
+    catch(error) {
+      res.status(500).json(error);
+      console.error(error);
+    }
+  }
+
+
+  const getRefreshLinkdinToken = async () => {
+    return new Promise((resolve, reject) => {
+      connection.query("SELECT * FROM variables WHERE title='LINKEDIN_REFRESH_TOKEN'", (err, results: any) => {
+        if (err) {
+          console.error('Error executing query:', err);
+          reject('Error retrieving LINKEDIN_REFRESH_TOKEN');
+          return;
+        }
+  
+        resolve(results[0].value);
+      });
+    });
+  };
