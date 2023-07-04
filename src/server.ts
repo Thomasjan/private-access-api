@@ -61,14 +61,37 @@ app.get('/test', (req: Request, res: Response) => {
   });
 
 //LINKEDIN
-  axios.get('http://localhost:3000/api/linkedin/getLinkedinPosts')
-  .then(() => {
+  // axios.get('http://localhost:3000/api/linkedin/getLinkedinPosts')
+  // .then(() => {
 
-  })
-  .catch((error) => {
-    console.log(error);
-  });
+  // })
+  // .catch((error) => {
+  //   console.log(error);
+  // });
+
+
+  const banner_private = `
+        ██████╗ ██████╗ ██╗██╗   ██╗ █████╗ ████████╗███████╗
+        ██╔══██╗██╔══██╗██║██║   ██║██╔══██╗╚══██╔   ██╔════╝
+        ██████╔╝██████╔╝██║╚██╗ ██╔╝███████║   ██║   █████╗  
+        ██╔═══╝ ██╔══██╗██║ ╚████╔╝ ██╔══██║   ██║   ██╔══╝  
+        ██║     ██║  ██║██║  ╚██╔╝  ██║  ██║   ██║   ███████╗
+        ╚═╝     ╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝  ╚═╝   ╚═╝   ╚══════╝
+`;
+
+const banner_access = `
+           █████╗  █████╗  █████╗ ███████╗ ██████╗ ██████╗
+          ██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝
+          ███████║██║  ╚═╝██║  ╚═╝█████╗  ╚█████╗ ╚█████╗
+          ██╔══██║██║  ██╗██║  ██╗██╔══╝   ╚═══██╗ ╚═══██╗
+          ██║  ██║╚█████╔╝╚█████╔╝███████╗██████╔╝██████╔╝
+          ╚═╝  ╚═╝ ╚════╝  ╚════╝ ╚══════╝╚═════╝ ╚═════╝
+`;
 
   app.listen(port, () => {
+    console.log(colors.bold.green(banner_private));
+    console.log(colors.bold.yellow(banner_access));
     console.log(colors.bold.red.underline(`Gestimum private-access runing on port ${port}!`));
   });
+
+  
