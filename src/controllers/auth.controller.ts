@@ -156,7 +156,7 @@ export const login = (req: Request, res: Response): void => {
         }
       }as TransportOptions);
 
-      const resetLink = `http://localhost:3000/api/auth/resetPassword/${email}`;
+      const resetLink = `http://api-espace-prive.gestimum.com/api/auth/resetPassword/${email}`;
 
       const mailOptions = {
         from: 'Gestimum.com',
@@ -247,7 +247,8 @@ export const login = (req: Request, res: Response): void => {
         }
       }as TransportOptions);
 
-      const loginLink = `http://localhost:5173/login`;
+      const loginLink = `http://espace-prive-dev.gestimum.com/login`;
+      
 
       const mailOptions = {
         from: 'Gestimum.com',

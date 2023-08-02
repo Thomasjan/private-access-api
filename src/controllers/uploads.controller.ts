@@ -28,7 +28,7 @@ export const getLastUpload = (req: Request, res: Response) => {
       res.status(500).send('Error retrieving downloads');
       return;
     }
-    console.log(colors.green(`Retrieved last upload:  ${colors.yellow(results[0].file_name + ' ' + results[0].version)} `));
+    console.log(colors.green(`Retrieved last upload:  ${colors.yellow(results[0]?.file_name + ' ' + results[0]?.version)} `));
     res.json(results[0]);
   });
 };
