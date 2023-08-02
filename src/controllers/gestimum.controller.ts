@@ -27,11 +27,10 @@ export const getGestimumClients = async (req: Request, res: Response) => {
     }
   };
 
-  console.log(process.env.ERP_API_URL)
   try {
       const tiers = await axios.get(`${process.env.ERP_API_URL}/clients/getGestimumClients`, config);
-      const firsts = tiers.data.clients.slice(0, 100);
-    res.status(200).json(firsts);
+      // const firsts = tiers.data.clients.slice(0, 100);
+    res.status(200).json(tiers.data.clients);
   } catch (error) {
     console.error('Error executing query:', error);
     res.status(500).send({ message: 'Server Error' });
