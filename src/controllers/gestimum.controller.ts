@@ -19,16 +19,19 @@ require('dotenv').config();
 
 export const getGestimumClients = async (req: Request, res: Response) => {
 
+const {query} = req.params;
+console.log(colors.yellow(query));
 
   const config = {
     headers: {
       'Content-Type': 'application/json',
       'x-api-key': process.env.TOKEN_SECRET,
-    }
+    },
+    
   };
 
   try {
-      const tiers = await axios.get(`${process.env.ERP_API_URL}/clients/getGestimumClients`, config);
+      const tiers = await axios.get(`${process.env.ERP_API_URL}/clients/getGestimumClientsQuery/${query}`, config);
       // const firsts = tiers.data.clients.slice(0, 100);
     res.status(200).json(tiers.data.clients);
   } catch (error) {
@@ -58,6 +61,5 @@ export const getGestimumClients = async (req: Request, res: Response) => {
 //     res.json(user);
 //   });
 // };
-
 
 
