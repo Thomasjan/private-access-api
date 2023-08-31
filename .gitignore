@@ -3,7 +3,7 @@ node_modules
 /dist
 
 #uploads
-./src/database/uploads
+/src/database/uploads
 
 # local env files
 .env.local
