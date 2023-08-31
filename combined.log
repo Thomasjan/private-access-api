@@ -1,0 +1,4 @@
+{"level":"info","message":"GET /"}
+{"level":"info","message":"GET /api/test"}
+{"level":"info","message":"GET /api/coucou"}
+{"level":"info","message":"GET /"}

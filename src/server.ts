@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 
 import bodyParser from 'body-parser';
@@ -8,6 +8,8 @@ import path from 'path';
 
 import axios from 'axios';
 
+const winston = require('winston');
+
 
 require('dotenv').config();
 import apiRouter from './routes';
@@ -16,7 +18,32 @@ import { connection, executeQuery} from './database';
 // const linkedin_access_token = 'AQVJyaUPuB4hHVHq2aug1o7ivONkRQb3-6Y7JrKLY40UrRQ-UIp3hLyKVJ2Ax1vLpfuxnGzIMhBknlUzeJUG1q3iyQY3xcktI-qzvqQlWvQQoWoApbMDUUIrLA16ZMQfdhOZaYMZOv92CU0krjoQ7UtfQjiusnZo0LcJ94bMRwPJlxnmz612gH6AEQmS-4pk7dzY539N3W28C1PUSHNE1njOuP7qdyJGFvCcmzGkbf0xn0JnbpkADXdiKEfa_q8VrgrcvRPHFy9lDniben2XVmhYlV9_wGE2dH2m8EVRJy-7KsY8fWAC-WxFl4j4h_83nBcpB2fFXAmlCxi1GhBG9gMphnWrRQ'
 
 const app = express()
-const port = 3000
+const port = 4000
+
+
+const logger = winston.createLogger({
+  level: 'info', // Log level
+  format: winston.format.json(), // Log format (you can customize this)
+  transports: [
+    new winston.transports.Console(), // Log to console
+    new winston.transports.File({ filename: 'error.log', level: 'error' }), // Log errors to a file
+    new winston.transports.File({ filename: 'combined.log' }) // Log all other messages to another file
+  ]
+});
+
+app.use((req, res, next) => {
+  logger.info(`${req.method} ${req.url}`);
+  next();
+});
+
+
+// Error handling middleware
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  logger.error(err.stack);
+  res.status(500).send('Something went wrong!');
+});
+
+
 
 app.use(cors(
   // {
@@ -66,14 +93,6 @@ app.get('/test', (req: Request, res: Response) => {
     }
   });
 
-//LINKEDIN
-  // axios.get('http://localhost:3000/api/linkedin/getLinkedinPosts')
-  // .then(() => {
-
-  // })
-  // .catch((error) => {
-  //   console.log(error);
-  // });
 
 
   const banner_private = `
