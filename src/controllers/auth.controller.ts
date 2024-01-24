@@ -77,6 +77,18 @@ export const login = (req: Request, res: Response): void => {
             }
           });
         }
+
+        //check if entreprises.end_contract is not expired
+        if (results[0].end_contract) {
+          const endContract = results[0].end_contract;
+          const endContractDate = new Date(endContract);
+          const today = new Date();
+          if (today > endContractDate) {
+            res.status(401).send({ message: 'Votre contrat a expiré' });
+            return;
+          }
+        }
+
         console.log(colors.green(`User ${colors.yellow(user.email)} logged in`));
         res.status(200).json(user);
       });

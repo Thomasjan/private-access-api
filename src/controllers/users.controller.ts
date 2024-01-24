@@ -125,6 +125,27 @@ export const addUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+export const updateUser = (req: Request, res: Response) => {
+  const userId = req.params.id;
+  console.log(req.body)
+  const { name, surname, email, entreprise_id, role_id } = req.body;
+
+  if (!name || !surname || !email || !entreprise_id || !role_id) {
+    res.status(400).send('Veillez remplir tous les champs');
+    return;
+  }
+
+  connection.query('UPDATE users SET name = ?, surname = ?, email = ?, entreprise_id = ?, role_id = ? WHERE id = ?', [name, surname, email, entreprise_id, role_id, userId], (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      res.status(500).send('Error updating user');
+      return;
+    }
+    console.log(results)
+    res.status(200).send('User updated successfully');
+  });
+}
+
 
 export const updatePassword = async (req: Request, res: Response): Promise<void> => {
   const { password, newPassword } = req.body;
@@ -170,3 +191,5 @@ export const updatePassword = async (req: Request, res: Response): Promise<void>
   });
      
 };
+
+
