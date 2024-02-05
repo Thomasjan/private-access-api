@@ -171,7 +171,7 @@ export const login = (req: Request, res: Response): void => {
       const resetLink = `http://api-espace-prive.gestimum.com/api/auth/resetPassword/${email}`;
 
       const mailOptions = {
-        from: 'Gestimum.com',
+        from: process.env.MAIL_FROM_ADDRESS,
         to: email,
         subject: 'Réinitialisation de votre mot de passe',
         html: `

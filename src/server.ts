@@ -101,6 +101,45 @@ app.get('/test', (req: Request, res: Response) => {
   //   res.status(200).json(hashedPassword);
   // });
 
+  // import nodemailer, { TransportOptions } from 'nodemailer';
+  // app.get('/mail', async (req: Request, res: Response) => {
+  //   try {
+  //     const transporter = nodemailer.createTransport({
+  //       host: process.env.MAIL_HOST,
+  //       port: process.env.MAIL_PORT,
+  //       secure: false, // true for 465, false for other ports
+  //       auth: {
+  //           user: process.env.MAIL_USERNAME,
+  //           pass: process.env.MAIL_PASSWORD
+  //       },
+  //     }as TransportOptions);
+
+  //     const mailOptions = {
+  //       from: process.env.MAIL_FROM_ADDRESS,
+  //       to: 'thomas.jankowski@gestimum.com',
+  //       // cc: '',
+  //       subject: 'Welcome to the application',
+  //       html: `
+  //         <html>
+  //           <body>
+  //             <h1 style="color: #333; text-align: center">Bonjour THOMAS,</h1>
+              
+  //             <p style="color: #666;">Votre compte d'accés à l'espace privée gestimum a été créé.</p>
+  //             <p style="color: #666;">Votre mot de passe: THOMAS</p>
+  //           </body>
+  //         </html>
+  //       `,
+  //     };
+
+  //     await transporter.sendMail(mailOptions);
+  //     console.log('Email sent successfully');
+  //     res.status(200).send('Email sent successfully');
+  //   } catch (error) {
+  //     console.error('Error sending email:', error);
+  //   }
+  // });
+
+
 
 
   const banner_private = `

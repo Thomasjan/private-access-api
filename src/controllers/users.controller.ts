@@ -95,7 +95,7 @@ export const addUser = async (req: Request, res: Response): Promise<void> => {
         }as TransportOptions);
 
         const mailOptions = {
-          from: 'Gestimum.com',
+          from: process.env.MAIL_FROM_ADDRESS,
           to: email,
           // cc: '',
           subject: 'Welcome to the application',
