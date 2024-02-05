@@ -93,6 +93,14 @@ app.get('/test', (req: Request, res: Response) => {
     }
   });
 
+  // import bcrypt from 'bcrypt';
+  // app.get('/hash', async (req: Request, res: Response) => {
+  //   const password = 'admin';
+  //   const salt = await bcrypt.genSalt(10);
+  //   const hashedPassword = await bcrypt.hash(password, salt);
+  //   res.status(200).json(hashedPassword);
+  // });
+
 
 
   const banner_private = `

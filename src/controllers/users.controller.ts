@@ -9,7 +9,7 @@ require('dotenv').config();
 
 //listes des utilisateurs avec l'entreprise associé
 export const getUsers = (req: Request, res: Response) => {
-  connection.query('SELECT users.*, users.created_at AS lastCreated, entreprises.* FROM users JOIN entreprises ON users.entreprise_id = entreprises.id ORDER BY lastCreated DESC', (err, results: any) => {
+  connection.query('SELECT *, users.id as id, users.created_at AS lastCreated, entreprises.id as entreprise_id FROM users JOIN entreprises ON users.entreprise_id = entreprises.id ORDER BY lastCreated DESC', (err, results: any) => {
     if (err) {
       console.error('Error executing query:', err);
       res.status(500).send('Error retrieving users');
@@ -97,6 +97,7 @@ export const addUser = async (req: Request, res: Response): Promise<void> => {
         const mailOptions = {
           from: 'Gestimum.com',
           to: email,
+          // cc: '',
           subject: 'Welcome to the application',
           html: `
             <html>
@@ -189,7 +190,24 @@ export const updatePassword = async (req: Request, res: Response): Promise<void>
       res.status(200).send('Password updated successfully');
     });
   });
+}
+
+  export const deleteUser = (req: Request, res: Response) => {
+    console.log(`delete user (${req.params.id})`)
+    const userId = req.params.id;
+  
+    connection.query('DELETE FROM users WHERE id = ?', userId, (err, results) => {
+      if (err) {
+        console.error('Error executing query:', err);
+        res.status(500).send('Error deleting user');
+        return;
+      }
+  
+      res.status(200).send('User deleted successfully');
+    });
      
 };
+
+
 
 
