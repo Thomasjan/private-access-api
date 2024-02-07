@@ -28,3 +28,7 @@ pnpm-debug.log*
 # Logs
 combined.log
 error.log
+
+#test
+coverage
+
