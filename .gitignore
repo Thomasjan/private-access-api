@@ -3,7 +3,7 @@ node_modules
 /dist
 
 #uploads
-./src/database/uploads
+/src/database/uploads
 
 # local env files
 .env.local
@@ -24,3 +24,11 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Logs
+combined.log
+error.log
+
+#test
+coverage
+

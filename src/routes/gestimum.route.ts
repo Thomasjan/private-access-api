@@ -4,7 +4,7 @@ const router = Router();
 
 import { getGestimumClients } from '../controllers/gestimum.controller';
 
-router.get('/getGestimumClients', getGestimumClients);
+router.get('/getGestimumClients/:query', getGestimumClients);
 
 
 export default router;

@@ -77,6 +77,18 @@ export const login = (req: Request, res: Response): void => {
             }
           });
         }
+
+        //check if entreprises.end_contract is not expired
+        if (results[0].end_contract) {
+          const endContract = results[0].end_contract;
+          const endContractDate = new Date(endContract);
+          const today = new Date();
+          if (today > endContractDate) {
+            res.status(401).send({ message: 'Votre contrat a expiré' });
+            return;
+          }
+        }
+
         console.log(colors.green(`User ${colors.yellow(user.email)} logged in`));
         res.status(200).json(user);
       });
@@ -156,10 +168,10 @@ export const login = (req: Request, res: Response): void => {
         }
       }as TransportOptions);
 
-      const resetLink = `http://localhost:3000/api/auth/resetPassword/${email}`;
+      const resetLink = `http://api-espace-prive.gestimum.com/api/auth/resetPassword/${email}`;
 
       const mailOptions = {
-        from: 'Gestimum.com',
+        from: process.env.MAIL_FROM_ADDRESS,
         to: email,
         subject: 'Réinitialisation de votre mot de passe',
         html: `
@@ -247,7 +259,8 @@ export const login = (req: Request, res: Response): void => {
         }
       }as TransportOptions);
 
-      const loginLink = `http://localhost:5173/login`;
+      const loginLink = `http://espace-prive-dev.gestimum.com/login`;
+      
 
       const mailOptions = {
         from: 'Gestimum.com',

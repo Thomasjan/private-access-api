@@ -9,7 +9,7 @@ require('dotenv').config();
 
 //listes des utilisateurs avec l'entreprise associé
 export const getUsers = (req: Request, res: Response) => {
-  connection.query('SELECT users.*, users.created_at AS lastCreated, entreprises.* FROM users JOIN entreprises ON users.entreprise_id = entreprises.id ORDER BY lastCreated DESC', (err, results: any) => {
+  connection.query('SELECT *, users.id as id, users.created_at AS lastCreated, entreprises.id as entreprise_id FROM users JOIN entreprises ON users.entreprise_id = entreprises.id ORDER BY lastCreated DESC', (err, results: any) => {
     if (err) {
       console.error('Error executing query:', err);
       res.status(500).send('Error retrieving users');
@@ -95,8 +95,9 @@ export const addUser = async (req: Request, res: Response): Promise<void> => {
         }as TransportOptions);
 
         const mailOptions = {
-          from: 'Gestimum.com',
+          from: process.env.MAIL_FROM_ADDRESS,
           to: email,
+          // cc: '',
           subject: 'Welcome to the application',
           html: `
             <html>
@@ -124,6 +125,27 @@ export const addUser = async (req: Request, res: Response): Promise<void> => {
     res.status(500).send('Error hashing password');
   }
 };
+
+export const updateUser = (req: Request, res: Response) => {
+  const userId = req.params.id;
+  console.log(req.body)
+  const { name, surname, email, entreprise_id, role_id } = req.body;
+
+  if (!name || !surname || !email || !entreprise_id || !role_id) {
+    res.status(400).send('Veillez remplir tous les champs');
+    return;
+  }
+
+  connection.query('UPDATE users SET name = ?, surname = ?, email = ?, entreprise_id = ?, role_id = ? WHERE id = ?', [name, surname, email, entreprise_id, role_id, userId], (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      res.status(500).send('Error updating user');
+      return;
+    }
+    console.log(results)
+    res.status(200).send('User updated successfully');
+  });
+}
 
 
 export const updatePassword = async (req: Request, res: Response): Promise<void> => {
@@ -168,5 +190,24 @@ export const updatePassword = async (req: Request, res: Response): Promise<void>
       res.status(200).send('Password updated successfully');
     });
   });
+}
+
+  export const deleteUser = (req: Request, res: Response) => {
+    console.log(`delete user (${req.params.id})`)
+    const userId = req.params.id;
+  
+    connection.query('DELETE FROM users WHERE id = ?', userId, (err, results) => {
+      if (err) {
+        console.error('Error executing query:', err);
+        res.status(500).send('Error deleting user');
+        return;
+      }
+  
+      res.status(200).send('User deleted successfully');
+    });
      
 };
+
+
+
+

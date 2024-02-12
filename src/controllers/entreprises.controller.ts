@@ -71,7 +71,7 @@ export const addEntreprise = (req: Request, res: Response): void => {
     };
 
     switch (entreprise.category) {
-      case '1. PARTENAIRE':
+      case '1. PAR':
         user.role_id = 2;
         break;
       case '2. PME':
