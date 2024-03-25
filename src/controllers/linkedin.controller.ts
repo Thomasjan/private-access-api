@@ -29,7 +29,7 @@ import axios from 'axios';
         if (post.content?.article?.thumbnail) {
           const thumbnail = post.content.article.thumbnail;
           const imageResponse = await axios.get(`https://api.linkedin.com/v2/images/${thumbnail}`, config);
-          const image = imageResponse.data.downloadUrl;
+          const image = imageResponse?.data?.downloadUrl || "https://www.linkedin.com/assets/images/placeholder.png";
           post.content.article.imageUrl = image;
         }
 
@@ -38,12 +38,12 @@ import axios from 'axios';
 
           if(thumbnail.includes("urn:li:video")) {
             const videoResponse = await axios.get(`https://api.linkedin.com/v2/videos/${thumbnail}`, config);
-            const video = videoResponse.data.downloadUrl;
+            const video = videoResponse?.data?.downloadUrl || "https://www.linkedin.com/assets/images/placeholder.png";
             post.content.media.videoUrl = video;
           }
           else if(thumbnail.includes("urn:li:image")) {
             const imageResponse = await axios.get(`https://api.linkedin.com/v2/images/${thumbnail}`, config);
-            const image = imageResponse.data.downloadUrl;
+            const image = imageResponse?.data?.downloadUrl || "https://www.linkedin.com/assets/images/placeholder.png";
             post.content.media.imageUrl = image;
           }
         }
@@ -52,12 +52,10 @@ import axios from 'axios';
           const images = post.content.multiImage.images;
           images.forEach(async (image: any) => {
             const imageResponse = await axios.get(`https://api.linkedin.com/v2/images/${image.id}`, config);
-            const imageUrl = imageResponse.data.downloadUrl;
+            const imageUrl = imageResponse?.data?.downloadUrl || "https://www.linkedin.com/assets/images/placeholder.png";
             image.imageUrl = imageUrl;
           });
         }
-        
-          
         return post;
       }));
   
