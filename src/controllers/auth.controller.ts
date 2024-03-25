@@ -168,7 +168,7 @@ export const login = (req: Request, res: Response): void => {
         }
       }as TransportOptions);
 
-      const resetLink = `http://api-espace-prive.gestimum.com/api/auth/resetPassword/${email}`;
+      const resetLink = `${process.env.SERVER_URL}/api/auth/resetPassword/${email}`;
 
       const mailOptions = {
         from: process.env.MAIL_FROM_ADDRESS,
@@ -259,7 +259,7 @@ export const login = (req: Request, res: Response): void => {
         }
       }as TransportOptions);
 
-      const loginLink = `http://espace-prive-dev.gestimum.com/login`;
+      const loginLink = `${process.env.APP_URL}/login`;
       
 
       const mailOptions = {
