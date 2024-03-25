@@ -49,7 +49,9 @@ const executeQuery = async (query: string): Promise<any> => {
     const result = await pool.request().query(query);
     return result.recordset;
   } catch (error) {
-    throw new Error(`Error executing query: ${error}`);
+    // throw new Error(`Error executing query: ${error}`);
+    console.log(`Error executing query: ${error}`)
+    return error;
   } 
 }
 
