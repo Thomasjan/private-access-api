@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
-import {connection} from '../database';
+import {connection, executeQuery} from '../database';
 import colors, { random } from 'colors';
 import axios from 'axios';
 
 
   export const getLinkedinPosts = async (req: Request, res: Response) => {
 
-    const accessToken = await getLinkdinToken();
+    const accessToken = await getLinkedinToken();
+    
     const count = 100; // Nombre de résultats par page (MAX 100)
-
 
     const config = {
     headers: {
@@ -68,21 +68,16 @@ import axios from 'axios';
 
   //https://api.linkedin.com/v2/shares?q=owners&owners=urn:li:organization:1201305&sharesPerOwner=1000
   
-
-  const getLinkdinToken = async () => {
-    return new Promise((resolve, reject) => {
-      connection.query("SELECT * FROM variables WHERE title='LINKEDIN_ACCESS_TOKEN'", (err, results: any) => {
-        if (err) {
-          console.error('Error executing query:', err);
-          reject('Error retrieving LINKEDIN_TOKEN');
-          return;
-        }
-  
-        resolve(results[0].value);
-      });
-    });
-  };
-
+  const getLinkedinToken = async () => {
+    try {
+        const results = await executeQuery("SELECT * FROM variables WHERE title='LINKEDIN_ACCESS_TOKEN'");
+        return results[0].value;
+    } catch (error) {
+        console.error('Error retrieving LinkedIn access token:', error);
+        // throw new Error('Error retrieving LINKEDIN_TOKEN');
+        return "Error retrieving LINKEDIN_TOKEN";
+    }
+};
 
 
   export const refreshLinkedinToken = async (req: Request, res: Response) => {
