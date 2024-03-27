@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
-import {connection} from '../database';
+import {DBConnection, connection} from '../database';
 import colors, { random } from 'colors';
 import axios from 'axios';
 
 
   export const getLinkedinPosts = async (req: Request, res: Response) => {
-
+    await DBConnection();
     const accessToken = await getLinkedinToken();
     // console.log(accessToken)
 
@@ -100,6 +100,7 @@ import axios from 'axios';
 
 
   export const refreshLinkedinToken = async (req: Request, res: Response) => {
+    await DBConnection();
     const refreshToken = await getRefreshLinkdinToken();
 
     try{
