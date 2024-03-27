@@ -1,13 +1,14 @@
 import { Request, Response } from 'express';
-import {connection} from '../database';
+import { DBConnection, connection} from '../database';
 import bcrypt from 'bcrypt';
-import colors, { random } from 'colors';
+import colors from 'colors';
 import nodemailer, { TransportOptions } from 'nodemailer';
 import path from 'path';
 
-export const login = (req: Request, res: Response): void => {
+export const login = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
 
+  await DBConnection();
   if (!email || !password) {
     res.status(400).send({ message: 'Remplissez tous les champs !' });
     return;
@@ -168,7 +169,7 @@ export const login = (req: Request, res: Response): void => {
         }
       }as TransportOptions);
 
-      const resetLink = `http://api-espace-prive.gestimum.com/api/auth/resetPassword/${email}`;
+      const resetLink = `${process.env.SERVER_URL}/api/auth/resetPassword/${email}`;
 
       const mailOptions = {
         from: process.env.MAIL_FROM_ADDRESS,
@@ -259,7 +260,7 @@ export const login = (req: Request, res: Response): void => {
         }
       }as TransportOptions);
 
-      const loginLink = `http://espace-prive-dev.gestimum.com/login`;
+      const loginLink = `${process.env.APP_URL}/login`;
       
 
       const mailOptions = {

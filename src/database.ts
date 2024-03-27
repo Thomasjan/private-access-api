@@ -13,6 +13,7 @@ import * as sql from 'mssql';
   });
 
 
+  const DBConnection = async () => {
   connection.connect((err) => {
     if (err) {
       console.error('Error connecting to the database:', err);
@@ -20,7 +21,9 @@ import * as sql from 'mssql';
     }
     console.log(colors.italic.magenta('Connected to MySQL database!'));
   });
+}
 
+DBConnection();
 
   //Connextion SQL Server Gestimum
   const dbHost = process.env.DB_HOST_SQLSRV || 'localhost';
@@ -55,4 +58,4 @@ const executeQuery = async (query: string): Promise<any> => {
   } 
 }
 
-export { connection, connectionGestimum, executeQuery };
+export { connection, connectionGestimum, executeQuery, DBConnection };
