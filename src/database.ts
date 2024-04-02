@@ -5,22 +5,53 @@ import * as sql from 'mssql';
 
 
   //Connextion Mysql private_access
-  const connection = mysql.createConnection({
+  const config = {
     host: process.env.DATABASE_HOST,
     user: process.env.DATABASE_USER,
     password: process.env.DATABASE_PASSWORD,
     database: process.env.DATABASE_NAME,
-  });
+  };
 
+  var connection;
 
-  connection.connect((err) => {
-    if (err) {
-      console.error('Error connecting to the database:', err);
-      return;
+  const handleDisconnect = () => {
+    connection = mysql.createConnection(config); // Recreate the connection, since
+    // the old one cannot be reused.
+
+    connection.connect(function(err) {              
+    if(err) {                                     
+    console.log('error when connecting to db:', err);
+    setTimeout(handleDisconnect, 2000); 
+    }                                     
+    });  
+
+    connection.on('error', function(err) {
+    console.log('db error', err);
+    if(err.code === 'PROTOCOL_CONNECTION_LOST') { 
+    handleDisconnect();                         
+    } else {                                       
+    throw err;                
     }
-    console.log(colors.italic.magenta('Connected to MySQL database!'));
-  });
+    });
+  };
 
+  handleDisconnect();
+
+
+  // const DBconnection = async () => {
+  //   connection.connect((err) => {
+  //     if (err) {
+  //       console.error('Error connecting to the database:', err);
+  //       return;
+  //     }
+  //     console.log(colors.italic.magenta('Connected to MySQL database!'));
+  //   });
+  // }
+
+  // const DBdisconnect = () => {
+  //   connection.end();
+  //   console.log(colors.italic.magenta('Disconnected from MySQL database!'));
+  // }
 
   //Connextion SQL Server Gestimum
   const dbHost = process.env.DB_HOST_SQLSRV || 'localhost';
@@ -55,4 +86,4 @@ const executeQuery = async (query: string): Promise<any> => {
   } 
 }
 
-export { connection, connectionGestimum, executeQuery };
+export { connection, connectionGestimum, executeQuery};
