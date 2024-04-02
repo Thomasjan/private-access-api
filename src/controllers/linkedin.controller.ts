@@ -1,16 +1,12 @@
 import { Request, Response } from 'express';
-import {DBConnection, connection} from '../database';
+import { connection } from '../database';
 import colors, { random } from 'colors';
 import axios from 'axios';
 
 
   export const getLinkedinPosts = async (req: Request, res: Response) => {
-    await DBConnection();
-    const accessToken = await getLinkedinToken();
-    // console.log(accessToken)
 
-    // const accessToken = process.env.LINKEDIN_ACCESS_TOKEN;
-    
+    const accessToken = await getLinkedinToken();
     const count = 100; // Nombre de résultats par page (MAX 100)
 
 
@@ -74,33 +70,22 @@ import axios from 'axios';
   
 
   const getLinkedinToken = async () => {
-    console.log(colors.bold.cyan(`getLinkedinToken!`));
-    try {
-        const results = await new Promise((resolve, reject) => {
-            connection.query("SELECT * FROM variables WHERE title='LINKEDIN_ACCESS_TOKEN'", (err, results: any) => {
-                if (err) {
-                    console.error('Error executing query:', err);
-                    reject('Error retrieving LINKEDIN_TOKEN');
-                    return;
-                }
-                if (!results[0]?.value) {
-                    reject('No access token found');
-                    return;
-                }
-                resolve(results[0]?.value);
-            });
-        });
-        return results;
-    } catch (error) {
-        console.error('Error in getLinkedinToken:', error);
-        return error;
-    }
-};
+    return new Promise((resolve, reject) => {
+      connection.query("SELECT * FROM variables WHERE title='LINKEDIN_ACCESS_TOKEN'", (err, results: any) => {
+        if (err) {
+          console.error('Error executing query:', err);
+          reject('Error retrieving LINKEDIN_TOKEN');
+          return;
+        }
+  
+        resolve(results[0].value);
+      });
+    });
+  };
 
 
 
   export const refreshLinkedinToken = async (req: Request, res: Response) => {
-    await DBConnection();
     const refreshToken = await getRefreshLinkdinToken();
 
     try{
