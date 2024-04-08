@@ -262,9 +262,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
       const loginLink = `${process.env.APP_URL}/login`;
       
-
       const mailOptions = {
-        from: 'Gestimum.com',
+        from: process.env.MAIL_FROM_ADDRESS,
         to: email,
         subject: 'Votre mot de passe a été réinitialisé',
         html: `
