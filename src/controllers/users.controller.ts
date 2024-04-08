@@ -89,7 +89,7 @@ export const addUser = async (req: Request, res: Response): Promise<void> => {
           host: process.env.MAIL_HOST,
           port: process.env.MAIL_PORT,
           auth: {
-            user: process.env.MAIL_USER,
+            user: process.env.MAIL_USERNAME,
             pass: process.env.MAIL_PASSWORD
           }
         }as TransportOptions);
@@ -102,10 +102,10 @@ export const addUser = async (req: Request, res: Response): Promise<void> => {
           html: `
             <html>
               <body>
-                <h1 style="color: #333; text-align: center">Bonjour ${name},</h1>
-                
-                <p style="color: #666;">Votre compte d'accés à l'espace privée gestimum a été créé.</p>
-                <p style="color: #666;">Votre mot de passe: ${randomPassword}</p>
+              <h1 style="color: #333; text-align: center;">Bonjour <span style="color: #ff6600;">${name}</span>,</h1>
+              <p style="color: #666;">Votre compte d'acc&eacute;s &agrave; l'espace priv&eacute;e gestimum a &eacute;t&eacute; cr&eacute;&eacute;.</p>
+              <p style="color: #666;">Votre mot de passe: <span style="color: #ff6600;"><strong>${randomPassword}<br /><br /><br /></strong>
+              <span style="color: #000000;">Se connecter &agrave; <a title="Espace Priv&eacute;" href="https://espace-prive.gestimum.com/">l'espace priv&eacute;</a> .<br /><br /><br /></span></span></p>
               </body>
             </html>
           `,
