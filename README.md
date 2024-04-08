@@ -35,7 +35,7 @@ https://github.com/Thomasjan/private-access-api
 
 `MAIL_PORT`
 
-`MAIL_USER`
+`MAIL_USERNAME`
 
 `MAIL_PASSWORD`
 
