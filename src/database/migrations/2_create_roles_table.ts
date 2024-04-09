@@ -9,9 +9,9 @@ export const up = async (knex: Knex): Promise<void> => {
 
   await knex('roles').insert([
     { title: 'Admin' },
-    { title: '1. PAR' },
-    { title: '2. PME' },
-    { title: '3. AUTRES' },
+    { title: '1.PAR' },
+    { title: '2.PME' },
+    { title: '3.AUTRES' },
   ]);
 };
 

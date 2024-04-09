@@ -71,10 +71,10 @@ export const addEntreprise = (req: Request, res: Response): void => {
     };
 
     switch (entreprise.category) {
-      case '1. PAR':
+      case '1.PAR':
         user.role_id = 2;
         break;
-      case '2. PME':
+      case '2.PME':
         user.role_id = 3;
         break;
       default:
