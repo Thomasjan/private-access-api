@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { DBConnection, connection} from '../database';
+import { connection} from '../database';
 import bcrypt from 'bcrypt';
 import colors from 'colors';
 import nodemailer, { TransportOptions } from 'nodemailer';
@@ -8,7 +8,6 @@ import path from 'path';
   export const login = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
 
-    await DBConnection();
     if (!email || !password) {
       res.status(400).send({ message: 'Remplissez tous les champs !' });
       return;
@@ -149,8 +148,24 @@ import path from 'path';
 
   export const forgotPassword = async (req: Request, res: Response): Promise<void> => {
     // Implement logic for generating a random password
-    const randomPassword = Math.random().toString(36).slice(-8);
-    const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
+    //Check if user exist
+    const email = req.body.email;
+    connection.query('SELECT * FROM users WHERE email = ?', email, async (err, results) => {
+      if (err) {
+        console.error('Error executing query:', err);
+        res.status(500).send({ message: 'Server Error' });
+        return;
+      }
+
+      const user = (results as any)?.[0];
+      if (!user) {
+        res.status(404).send({ message: 'Utilisateur non trouvé' });
+        return;
+      }
+
+      const randomPassword = Math.random().toString(36).slice(-8);
+      // const hashedPassword = await bcrypt.hash(randomPassword, 10);
 
     // const email = req.body.email;
     // await updateUserPassword(email, hashedPassword);
@@ -163,6 +178,9 @@ import path from 'path';
     } else {
       res.status(500).json({ error: 'Failed to send password reset email.' });
     }
+    });
+
+    
   };
 
   export const sendPasswordResetEmail = async (email: string, password: string): Promise<boolean> => {

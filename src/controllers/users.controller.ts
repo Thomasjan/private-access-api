@@ -147,7 +147,6 @@ export const updateUser = (req: Request, res: Response) => {
   });
 }
 
-
 export const updatePassword = async (req: Request, res: Response): Promise<void> => {
   const { password, newPassword } = req.body;
   const userId = req.params.id;
@@ -192,7 +191,7 @@ export const updatePassword = async (req: Request, res: Response): Promise<void>
   });
 }
 
-  export const deleteUser = (req: Request, res: Response) => {
+export const deleteUser = (req: Request, res: Response) => {
     console.log(`delete user (${req.params.id})`)
     const userId = req.params.id;
   
