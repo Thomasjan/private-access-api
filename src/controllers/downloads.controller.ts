@@ -16,6 +16,19 @@ export const getDownloads = (req: Request, res: Response) => {
   });
 };
 
+export const resetDownloads = (req: Request, res: Response) => {
+  connection.query('TRUNCATE TABLE downloads', (err) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      res.status(500).send({ message: 'Server Error' });
+      return;
+    }
+
+    console.log(colors.green('Downloads table truncated'));
+    res.status(200).send({ message: 'Suivi de téléchargements vidé !' });
+  });
+}
+
 
 
 //Ajout d'un téléchargement
