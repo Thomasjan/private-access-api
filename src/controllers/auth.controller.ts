@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { DBConnection, connection} from '../database';
+import { connection} from '../database';
 import bcrypt from 'bcrypt';
 import colors from 'colors';
 import nodemailer, { TransportOptions } from 'nodemailer';
@@ -8,7 +8,6 @@ import path from 'path';
   export const login = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
 
-    await DBConnection();
     if (!email || !password) {
       res.status(400).send({ message: 'Remplissez tous les champs !' });
       return;
