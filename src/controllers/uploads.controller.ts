@@ -42,22 +42,24 @@ export const addUpload = async (req: Request, res: Response,): Promise<void> => 
       return;
     }
 
-    if (!version || !type || !description  || !file_name  ) {
+    if (!version || !type || !file_name  ) {
         res.status(400).send({ message: 'Missing fields' });
         return;
     }
-    
-      const upload = {
-        version,
-        type,
-        file_name,
-        description,
-        patch,
-        image_path: req.files['image'][0].filename,
-        file_path: req.files['file'][0].filename,
-      };
 
-      console.log(upload)
+    let latestVersion: any = await getLastversion()
+    //get last upload
+    
+    
+    const upload = {
+      version,
+      type,
+      file_name,
+      description: description || (latestVersion ? latestVersion.description : ''),
+      patch: patch || (latestVersion ? latestVersion.patch : ''),
+      image_path: req.files['image'] && req.files['image'][0] ? req.files['image'][0].filename : '',
+      file_path: req.files['file'] && req.files['file'][0] ? req.files['file'][0].filename : '',
+    };
   
       connection.query('INSERT INTO uploads SET ?', upload, (err, results: any) => {
         if (err) {
@@ -69,4 +71,16 @@ export const addUpload = async (req: Request, res: Response,): Promise<void> => 
         res.status(201).send({ message: 'Upload added' });
     });
   };
+
+  export const getLastversion = async () => {
+    return new Promise((resolve, reject) => {
+      connection.query("SELECT * FROM uploads WHERE type='Commerciale' ORDER BY created_at DESC LIMIT 1", (err, results: any) => {
+        if (err) {
+          console.error('Error executing query:', err);
+          reject(err)
+        }
+        resolve(results[0])
+      });
+    });
+  }
 

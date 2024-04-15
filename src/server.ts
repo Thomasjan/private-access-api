@@ -41,18 +41,23 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 
 
 app.use(cors(
-  // {
-  //   origin: ['*', 'http://espace-prive-dev.gestimum.com'],
-  //   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  //   allowedHeaders: ['Content-Type', 'Authorization']
-  // }
+  {
+    origin: [
+      'http://espace-prive-dev.gestimum.com',
+      'https://espace-prive-dev.gestimum.com',
+      'http://espace-prive.gestimum.com',
+      'https://espace-prive.gestimum.com',
+      'http://localhost:5173',
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  }
 ));
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
 const uploadsPath = path.join(__dirname, 'database', 'uploads');
 
-// console.log('Uploads directory:', uploadsPath);
 
 const ulpoadUrl = '/files/uploads';
 app.use(ulpoadUrl, express.static(uploadsPath));
@@ -71,43 +76,44 @@ app.get('/', (req: Request, res: Response) => {
   //   res.status(200).json(hashedPassword);
   // });
 
-  import nodemailer, { TransportOptions } from 'nodemailer';
-  app.get('/mail', async (req: Request, res: Response) => {
-    try {
-      const transporter = nodemailer.createTransport({
-        host: process.env.MAIL_HOST,
-        port: process.env.MAIL_PORT,
-        secure: false, // true for 465, false for other ports
-        auth: {
-            user: process.env.MAIL_USERNAME,
-            pass: process.env.MAIL_PASSWORD
-        },
-      }as TransportOptions);
+  
+  // import nodemailer, { TransportOptions } from 'nodemailer';
+  // app.get('/mail', async (req: Request, res: Response) => {
+  //   try {
+  //     const transporter = nodemailer.createTransport({
+  //       host: process.env.MAIL_HOST,
+  //       port: process.env.MAIL_PORT,
+  //       secure: false, // true for 465, false for other ports
+  //       auth: {
+  //           user: process.env.MAIL_USERNAME,
+  //           pass: process.env.MAIL_PASSWORD
+  //       },
+  //     }as TransportOptions);
 
-      const mailOptions = {
-        from: process.env.MAIL_FROM_ADDRESS,
-        to: 'thomas.jankowski@gestimum.com',
-        // cc: '',
-        subject: 'Welcome to the application',
-        html: `
-          <html>
-            <body>
-              <h1 style="color: #333; text-align: center">Bonjour THOMAS,</h1>
+  //     const mailOptions = {
+  //       from: process.env.MAIL_FROM_ADDRESS,
+  //       to: 'thomas.jankowski@gestimum.com',
+  //       // cc: '',
+  //       subject: 'Welcome to the application',
+  //       html: `
+  //         <html>
+  //           <body>
+  //             <h1 style="color: #333; text-align: center">Bonjour THOMAS,</h1>
               
-              <p style="color: #666;">Votre compte d'accés à l'espace privée gestimum a été créé.</p>
-              <p style="color: #666;">Votre mot de passe: THOMAS</p>
-            </body>
-          </html>
-        `,
-      };
+  //             <p style="color: #666;">Votre compte d'accés à l'espace privée gestimum a été créé.</p>
+  //             <p style="color: #666;">Votre mot de passe: THOMAS</p>
+  //           </body>
+  //         </html>
+  //       `,
+  //     };
 
-      await transporter.sendMail(mailOptions);
-      console.log('Email sent successfully');
-      res.status(200).send('Email sent successfully');
-    } catch (error) {
-      console.error('Error sending email:', error);
-    }
-  });
+  //     await transporter.sendMail(mailOptions);
+  //     console.log('Email sent successfully');
+  //     res.status(200).send('Email sent successfully');
+  //   } catch (error) {
+  //     console.error('Error sending email:', error);
+  //   }
+  // });
 
 
 

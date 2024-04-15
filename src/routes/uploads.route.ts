@@ -22,9 +22,8 @@ router.post('/addUpload', upload.fields([{ name: 'file', maxCount: 1 }, { name: 
       const image = files.image[0];
       
       const originalName = file.originalname;
-      const ext = path.extname(originalName);
-      const newName = `${req.body.file_name}_${req.body.version}${ext}`; // Nouveau nom du fichier
-      const newImageName = `${req.body.file_name}_${req.body.version}_image`; // Nouveau nom de l'image
+      const newName = originalName || file.filename; // Nouveau nom du fichier
+      const newImageName = `${req.body.file_name}_${image.originalname}`; // Nouveau nom de l'image
       // Rename the file using fs.renameSync
       const oldPath = file.path;
       const newPath = path.join(file.destination, newName);
