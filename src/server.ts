@@ -52,6 +52,7 @@ app.use(cors(
       'https://espace-prive-test.gestimum.com:8684',
       'http://docker.gestimum.com:8567',
       'https://docker.gestimum.com:8567',
+      'http://srv-docker-u.gestimum.local:4985'
 
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
