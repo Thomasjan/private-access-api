@@ -48,6 +48,11 @@ app.use(cors(
       'http://espace-prive.gestimum.com',
       'https://espace-prive.gestimum.com',
       'http://localhost:5173',
+      'http://espace-prive-test.gestimum.com:8684',
+      'https://espace-prive-test.gestimum.com:8684',
+      'http://docker.gestimum.com:8567',
+      'https://docker.gestimum.com:8567',
+
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
