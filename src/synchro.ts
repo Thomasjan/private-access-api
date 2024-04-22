@@ -54,7 +54,7 @@ const getGestimumClients = async () => {
 
 const getEntreprises = async () => {
     try {
-        const response = await axios.get(`${process.env.APP_URL}/api/entreprises/getEntreprises`);
+        const response = await axios.get(`${process.env.SERVER_URL}/api/entreprises/getEntreprises`);
     
         const entreprises = response.data;
         return entreprises;
@@ -82,7 +82,7 @@ const createClients = async (client: any, entreprises: any) => {
             }
             try {
                 console.log('Creating'.green, newEntreprise.social_reason);
-                await axios.post(`${process.env.APP_URL}/api/entreprises/addEntreprise`, newEntreprise, {
+                await axios.post(`${process.env.SERVER_URL}/api/entreprises/addEntreprise`, newEntreprise, {
                     headers: {
                         'Content-Type': 'application/json',
                       }
@@ -110,7 +110,7 @@ const updateEntreprise = async (entreprise: any, clients: any) => {
             }
             try {
                 console.log('Updating'.yellow, updatedEntreprise.social_reason);
-                await axios.put(`${process.env.APP_URL}/api/entreprises/updateEntreprise/${entreprise.id}`, updatedEntreprise, {
+                await axios.put(`${process.env.SERVER_URL}/api/entreprises/updateEntreprise/${entreprise.id}`, updatedEntreprise, {
                     headers: {
                         'Content-Type': 'application/json',
                       }
