@@ -8,13 +8,13 @@ import path from 'path';
 
 const winston = require('winston');
 
-
 require('dotenv').config();
 import apiRouter from './routes';
 
 const app: Application = express()
 const port: Number = 4000
-
+//script to synchronize data from Gestimum
+require('./synchro');
 
 const logger = winston.createLogger({
   level: 'info', // Log level
@@ -37,8 +37,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   logger.error(err.stack);
   res.status(500).send('Something went wrong!');
 });
-
-
 
 app.use(cors(
   {
