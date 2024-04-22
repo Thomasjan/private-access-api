@@ -126,6 +126,7 @@ export const updateEntreprise = (req: Request, res: Response): void => {
 
   if (!social_reason || !code_client || !category || !subcategory || !contract || !end_contract) {
     res.status(400).send('Veuillez remplir tous les champs');
+    console.log("champs manquant: ", req.body)
     return;
   }
 

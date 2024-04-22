@@ -33,6 +33,7 @@ console.log(colors.yellow(query));
   try {
       const tiers = await axios.get(`${process.env.ERP_API_URL}/clients/getGestimumClientsQuery/${query}`, config);
       // const firsts = tiers.data.clients.slice(0, 100);
+      console.log("TIERS".yellow, tiers)
     res.status(200).json(tiers.data.clients);
   } catch (error) {
     console.error('Error executing query:', error);
