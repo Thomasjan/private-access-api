@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 
 import colors from 'colors';
 import nodemailer, { TransportOptions } from 'nodemailer';
+import { json } from 'body-parser';
 
 require('dotenv').config();
 
@@ -59,72 +60,36 @@ export const addUser = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
+  const user = {
+    name,
+    surname,
+    email,
+    entreprise_id,
+    role_id
+  };
+
   try {
-    const randomPassword = Math.random().toString(36).slice(-8);
-    const hashedPassword = await bcrypt.hash(randomPassword, 10);
-
-    const user = {
-      name,
-      surname,
-      email,
-      password: hashedPassword,
-      entreprise_id,
-      role_id
-    };
-
-    // Insert the user into the database
-    connection.query('INSERT INTO users SET ?', user, async (err, results) => {
-      if (err) {
-        console.error('Error executing query:', err);
-        res.status(500).send('Error adding user');
-        return;
-      }
-
-      const insertedUserId = (results as any)?.[0]?.insertId;
-
-      // Envoie du mail de bienvenue avec le mot de passe
-      try {
-        
-        const transporter = nodemailer.createTransport({
-          host: process.env.MAIL_HOST,
-          port: process.env.MAIL_PORT,
-          auth: {
-            user: process.env.MAIL_USER,
-            pass: process.env.MAIL_PASSWORD
-          }
-        }as TransportOptions);
-
-        const mailOptions = {
-          from: process.env.MAIL_FROM_ADDRESS,
-          to: email,
-          // cc: '',
-          subject: 'Welcome to the application',
-          html: `
-            <html>
-              <body>
-                <h1 style="color: #333; text-align: center">Bonjour ${name},</h1>
-                
-                <p style="color: #666;">Votre compte d'accés à l'espace privée gestimum a été créé.</p>
-                <p style="color: #666;">Votre mot de passe: ${randomPassword}</p>
-              </body>
-            </html>
-          `,
-        };
-
-        await transporter.sendMail(mailOptions);
-        console.log('Email sent successfully');
-      } catch (error) {
-        console.error('Error sending email:', error);
-      }
-
-      res.status(201).json({ id: insertedUserId, ...user });
-      console.log(colors.green(`Added user ${colors.yellow(name)} ${colors.yellow(surname)}`));
-    });
-  } catch (error) {
-    console.error('Error hashing password:', error);
-    res.status(500).send('Error hashing password');
+    const insertedUserId = await addUserFunction(user);
+    res.status(201).json({ id: insertedUserId, ...user });
+  } catch (error: any) {
+    res.status(500).send(error.message);
   }
 };
+
+export const addUsers = async (req: Request, res: Response): Promise<void> => {
+  const users = req.body;
+  console.log(users)
+  if (!Array.isArray(users)) {
+    res.status(400).send('Invalid request body');
+    return;
+  }
+
+  const usersPromises = users.map((user: any) => addUserFunction(user));
+
+  Promise.all(usersPromises).then((results) => {
+    res.status(201).json(results);
+  });
+}
 
 export const updateUser = (req: Request, res: Response) => {
   const userId = req.params.id;
@@ -146,7 +111,6 @@ export const updateUser = (req: Request, res: Response) => {
     res.status(200).send('User updated successfully');
   });
 }
-
 
 export const updatePassword = async (req: Request, res: Response): Promise<void> => {
   const { password, newPassword } = req.body;
@@ -192,7 +156,7 @@ export const updatePassword = async (req: Request, res: Response): Promise<void>
   });
 }
 
-  export const deleteUser = (req: Request, res: Response) => {
+export const deleteUser = (req: Request, res: Response) => {
     console.log(`delete user (${req.params.id})`)
     const userId = req.params.id;
   
@@ -206,6 +170,71 @@ export const updatePassword = async (req: Request, res: Response): Promise<void>
       res.status(200).send('User deleted successfully');
     });
      
+};
+
+
+
+
+const addUserFunction = async (user) => {
+  try {
+    const randomPassword = Math.random().toString(36).slice(-8);
+    const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
+    const userWithHashedPassword = {
+      ...user,
+      password: hashedPassword
+    };
+
+    return new Promise((resolve, reject) => {
+      connection.query('INSERT INTO users SET ?', userWithHashedPassword, async (err, results) => {
+        if (err) {
+          console.error('Error executing query:', err);
+          reject('Error adding user');
+          return;
+        }
+
+        const insertedUserId = results?.insertId;
+
+        try {
+          const transporter = nodemailer.createTransport({
+            host: process.env.MAIL_HOST,
+            port: process.env.MAIL_PORT,
+            auth: {
+              user: process.env.MAIL_USERNAME,
+              pass: process.env.MAIL_PASSWORD
+            }
+          }as TransportOptions);
+
+          const mailOptions = {
+            from: process.env.MAIL_FROM_ADDRESS,
+            to: user.email,
+            subject: 'Welcome to the application',
+            html: `
+              <html>
+                <body>
+                  <h1 style="color: #333; text-align: center;">Bonjour <span style="color: #ff6600;">${user.name}</span>,</h1>
+                  <p style="color: #666;">Votre compte d'accès à l'espace privée gestimum a été créé.</p>
+                  <p style="color: #666;">Votre mot de passe: <span style="color: #ff6600;"><strong>${randomPassword}</strong></span></p>
+                  <p style="color: #666;">Se connecter à <a title="Espace Privé" href="https://espace-prive.gestimum.com/">l'espace privée</a>.</p>
+                </body>
+              </html>
+            `,
+          };
+
+          await transporter.sendMail(mailOptions);
+          console.log('Email sent successfully');
+        } catch (error) {
+          console.error('Error sending email:', error);
+        }
+
+        console.log('User added successfully');
+        resolve(insertedUserId);
+      });
+    });
+  } catch (error) {
+    console.error('Error hashing password:', error);
+    throw new Error('Error hashing password');
+  }
 };
 
 

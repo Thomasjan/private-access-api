@@ -1,101 +1,100 @@
 import { Request, Response } from 'express';
-import { DBConnection, connection} from '../database';
+import { connection} from '../database';
 import bcrypt from 'bcrypt';
 import colors from 'colors';
 import nodemailer, { TransportOptions } from 'nodemailer';
 import path from 'path';
 
-export const login = async (req: Request, res: Response): Promise<void> => {
-  const { email, password } = req.body;
+  export const login = async (req: Request, res: Response): Promise<void> => {
+    const { email, password } = req.body;
 
-  await DBConnection();
-  if (!email || !password) {
-    res.status(400).send({ message: 'Remplissez tous les champs !' });
-    return;
-  }
-
-  connection.query('SELECT * FROM users WHERE email = ?', email, (err, results) => {
-    if (err) {
-      console.error('Error executing query:', err);
-      res.status(500).send({ message: 'Server Error' });
+    if (!email || !password) {
+      res.status(400).send({ message: 'Remplissez tous les champs !' });
       return;
     }
 
-    const user = (results as any)?.[0];
-
-    if (!user) {
-      res.status(404).send({ message: 'Utilisateur non trouvé' });
-      return;
-    }
-
-    bcrypt.compare(password, user.password, (err, passwordMatch) => {
+    connection.query('SELECT * FROM users WHERE email = ?', email, (err, results) => {
       if (err) {
-        console.error('Error comparing passwords:', err);
+        console.error('Error executing query:', err);
         res.status(500).send({ message: 'Server Error' });
         return;
       }
 
-      if (!passwordMatch) {
-        res.status(401).send({ message: 'Mot de passe incorrect' });
+      const user = (results as any)?.[0];
+
+      if (!user) {
+        res.status(404).send({ message: 'Utilisateur non trouvé' });
         return;
       }
 
-      // Passwords match, continue with the login process
-
-      // Add trace to database
-      const date = new Date();
-      const name = user.name;
-      const surname = user.surname;
-      const entrepriseId = user.entreprise_id; // Assuming there is an 'entreprise_id' field in the 'users' table
-
-      // Retrieve the social_reason from the entreprises table based on entrepriseId
-      connection.query('SELECT * FROM Entreprises WHERE id = ?', entrepriseId, (err, results: any) => {
+      bcrypt.compare(password, user.password, (err, passwordMatch) => {
         if (err) {
-          console.error('Error executing query:', err);
-          // Handle error if necessary
-          res.status(500).send({ message: 'Erreur lors de la récupération de la raison sociale' });
+          console.error('Error comparing passwords:', err);
+          res.status(500).send({ message: 'Server Error' });
           return;
         }
 
-        if (results.length === 0) {
-          // Handle case when no entreprise is found with the provided entrepriseId
-          res.status(404).send({ message: 'Aucune entreprise trouvée avec l\'ID fourni' });
+        if (!passwordMatch) {
+          res.status(401).send({ message: 'Mot de passe incorrect' });
           return;
         }
 
-        const social_reason = results[0].social_reason;
-        const category = results[0].category;
-        const subcategory = results[0].subcategory;
+        // Passwords match, continue with the login process
 
-        const trace = { date, name, surname, social_reason, category, subcategory };
+        // Add trace to database
+        const date = new Date();
+        const name = user.name;
+        const surname = user.surname;
+        const entrepriseId = user.entreprise_id; // Assuming there is an 'entreprise_id' field in the 'users' table
 
-        // Ajouter les logs des logins pour les utilisateurs non admins
-        if (user.role_id > 1) {
-          connection.query('INSERT INTO logins SET ?', trace, (err) => {
-            if (err) {
-              console.error('Error executing query:', err);
-              // Handle error if necessary
-            }
-          });
-        }
-
-        //check if entreprises.end_contract is not expired
-        if (results[0].end_contract) {
-          const endContract = results[0].end_contract;
-          const endContractDate = new Date(endContract);
-          const today = new Date();
-          if (today > endContractDate) {
-            res.status(401).send({ message: 'Votre contrat a expiré' });
+        // Retrieve the social_reason from the entreprises table based on entrepriseId
+        connection.query('SELECT * FROM Entreprises WHERE id = ?', entrepriseId, (err, results: any) => {
+          if (err) {
+            console.error('Error executing query:', err);
+            // Handle error if necessary
+            res.status(500).send({ message: 'Erreur lors de la récupération de la raison sociale' });
             return;
           }
-        }
 
-        console.log(colors.green(`User ${colors.yellow(user.email)} logged in`));
-        res.status(200).json(user);
+          if (results.length === 0) {
+            // Handle case when no entreprise is found with the provided entrepriseId
+            res.status(404).send({ message: 'Aucune entreprise trouvée avec l\'ID fourni' });
+            return;
+          }
+
+          const social_reason = results[0].social_reason;
+          const category = results[0].category;
+          const subcategory = results[0].subcategory;
+
+          const trace = { date, name, surname, social_reason, category, subcategory };
+
+          // Ajouter les logs des logins pour les utilisateurs non admins
+          if (user.role_id > 1) {
+            connection.query('INSERT INTO logins SET ?', trace, (err) => {
+              if (err) {
+                console.error('Error executing query:', err);
+                // Handle error if necessary
+              }
+            });
+          }
+
+          //check if entreprises.end_contract is not expired
+          if (results[0].end_contract) {
+            const endContract = results[0].end_contract;
+            const endContractDate = new Date(endContract);
+            const today = new Date();
+            if (today > endContractDate) {
+              res.status(401).send({ message: 'Votre contrat a expiré' });
+              return;
+            }
+          }
+
+          console.log(colors.green(`User ${colors.yellow(user.email)} logged in`));
+          res.status(200).json(user);
+        });
       });
     });
-  });
-};
+  };
 
   //Récupérer les logs des logins
   export const getLogins = (req: Request, res: Response): void => {
@@ -134,12 +133,39 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     );
   };
 
+  export const resetLogins = (req: Request, res: Response): void => {
+    connection.query('TRUNCATE TABLE logins', (err) => {
+      if (err) {
+        console.error('Error executing query:', err);
+        res.status(500).send({ message: 'Server Error' });
+        return;
+      }
 
+      console.log(colors.green('Logins table truncated'));
+      res.status(200).send({ message: 'Suivi de connexions vidé !' });
+    });
+  }
 
   export const forgotPassword = async (req: Request, res: Response): Promise<void> => {
     // Implement logic for generating a random password
-    const randomPassword = Math.random().toString(36).slice(-8);
-    const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
+    //Check if user exist
+    const email = req.body.email;
+    connection.query('SELECT * FROM users WHERE email = ?', email, async (err, results) => {
+      if (err) {
+        console.error('Error executing query:', err);
+        res.status(500).send({ message: 'Server Error' });
+        return;
+      }
+
+      const user = (results as any)?.[0];
+      if (!user) {
+        res.status(404).send({ message: 'Utilisateur non trouvé' });
+        return;
+      }
+
+      const randomPassword = Math.random().toString(36).slice(-8);
+      // const hashedPassword = await bcrypt.hash(randomPassword, 10);
 
     // const email = req.body.email;
     // await updateUserPassword(email, hashedPassword);
@@ -152,6 +178,9 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     } else {
       res.status(500).json({ error: 'Failed to send password reset email.' });
     }
+    });
+
+    
   };
 
   export const sendPasswordResetEmail = async (email: string, password: string): Promise<boolean> => {
@@ -164,7 +193,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         host: process.env.MAIL_HOST,
         port: process.env.MAIL_PORT,
         auth: {
-          user: process.env.MAIL_USER,
+          user: process.env.MAIL_USERNAME,
           pass: process.env.MAIL_PASSWORD
         }
       }as TransportOptions);
@@ -255,16 +284,15 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         host: process.env.MAIL_HOST,
         port: process.env.MAIL_PORT,
         auth: {
-          user: process.env.MAIL_USER,
+          user: process.env.MAIL_USERNAME,
           pass: process.env.MAIL_PASSWORD
         }
       }as TransportOptions);
 
       const loginLink = `${process.env.APP_URL}/login`;
       
-
       const mailOptions = {
-        from: 'Gestimum.com',
+        from: process.env.MAIL_FROM_ADDRESS,
         to: email,
         subject: 'Votre mot de passe a été réinitialisé',
         html: `

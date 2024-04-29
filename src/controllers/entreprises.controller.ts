@@ -60,37 +60,41 @@ export const addEntreprise = (req: Request, res: Response): void => {
       return;
     }
 
-    const insertedEntrepriseId = (results as any)?.insertId;
-    const user = {
-      name: 'user',
-      surname: entreprise.social_reason,
-      email: 'user@'+entreprise.social_reason+'.com',
-      password: 'user@'+entreprise.social_reason+'.com',
-      entreprise_id: insertedEntrepriseId,
-      role_id: 0,
-    };
+    console.log(colors.green(`Created entreprise ${colors.yellow(entreprise.social_reason)} with id ${colors.yellow(results.insertId)}`));
+    return res.status(201).json({ id: results.insertId, ...entreprise });
+    
 
-    switch (entreprise.category) {
-      case '1. PAR':
-        user.role_id = 2;
-        break;
-      case '2. PME':
-        user.role_id = 3;
-        break;
-      default:
-        user.role_id = 4;
-        break;
-    }
+    // const insertedEntrepriseId = (results as any)?.insertId;
+    // const user = {
+    //   name: 'user',
+    //   surname: entreprise.social_reason,
+    //   email: 'user@'+entreprise.social_reason+'.com',
+    //   password: 'user@'+entreprise.social_reason+'.com',
+    //   entreprise_id: insertedEntrepriseId,
+    //   role_id: 0,
+    // };
 
-    createUser(user)
-      .then(() => {
-        res.status(201).json({ id: insertedEntrepriseId, ...entreprise });
-        console.log(colors.green(`Created entreprise ${colors.yellow(entreprise.social_reason)} with id ${colors.yellow(insertedEntrepriseId)}`));
-      })
-      .catch((error) => {
-        console.error('Error creating user:', error);
-        res.status(500).send("Erreur de la création de l'utilisateur");
-      });
+    // switch (entreprise.category) {
+    //   case '1. PAR':
+    //     user.role_id = 2;
+    //     break;
+    //   case '2. PME':
+    //     user.role_id = 3;
+    //     break;
+    //   default:
+    //     user.role_id = 4;
+    //     break;
+    // }
+
+    // createUser(user)
+    //   .then(() => {
+    //     res.status(201).json({ id: insertedEntrepriseId, ...entreprise });
+    //     console.log(colors.green(`Created entreprise ${colors.yellow(entreprise.social_reason)} with id ${colors.yellow(insertedEntrepriseId)}`));
+    //   })
+    //   .catch((error) => {
+    //     console.error('Error creating user:', error);
+    //     res.status(500).send("Erreur de la création de l'utilisateur");
+    //   });
     });
   });
 };
@@ -126,6 +130,7 @@ export const updateEntreprise = (req: Request, res: Response): void => {
 
   if (!social_reason || !code_client || !category || !subcategory || !contract || !end_contract) {
     res.status(400).send('Veuillez remplir tous les champs');
+    console.log("champs manquant: ", req.body)
     return;
   }
 
@@ -153,18 +158,6 @@ export const updateEntreprise = (req: Request, res: Response): void => {
     }
   );
 }
-
-// export const deleteEntreprise = (req: Request, res: Response): void => {
-//   connection.query('DELETE FROM Entreprises WHERE id = ?', req.params.id, (err, results) => {
-//     if (err) {
-//       console.error('Error executing query:', err);
-//       res.status(500).send("Erreur de la suppression de l'entreprise");
-//       return;
-//     }
-
-//     res.status(200).json({ id: req.params.id });
-//   });
-// }
 
 export const deleteEntreprise = (req: Request, res: Response): void => {
   const entrepriseId = req.params.id;
