@@ -22,7 +22,8 @@ docker-job:
     # Check if the image exists before attempting to remove it
     - docker rmi private-access-api || echo "no images  named private-access-api"
     # Recreate the .env file from the CI/CD variable
-    - echo "$ENV_FILE" > .env
+    - echo '$ENV_FILE'
+    - echo "Copy .env file -> '$ENV_FILE'" > .env
     - docker build -t private-access-api ./
     - docker run --name private-access-api -p 5651:4000 --network bridge -d private-access-api
     - docker ps
