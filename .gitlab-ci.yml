@@ -22,7 +22,7 @@ docker-job:
     # Check if the image exists before attempting to remove it
     - docker rmi private-access-api || echo "no images  named private-access-api"
     - docker build -t private-access-api ./
-    - docker run --name private-access-api -p 5651:4000 -d private-access-api
+    - docker run --name private-access-api -p 5651:4000 --network bridge -d private-access-api
     - docker ps
   only:
     - main
