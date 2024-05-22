@@ -7,7 +7,7 @@ import colors from 'colors';
 
 //listes des utilisateurs
 export const getEntreprises = ((req: Request, res: Response) => {
-  connection.query('SELECT * FROM Entreprises ORDER BY `created_at` DESC', (err, results: any) => {
+  connection.query('SELECT * FROM entreprises ORDER BY `created_at` DESC', (err, results: any) => {
     if (err) {
       console.error('Error executing query:', err);
       res.status(500).send('Erreur de chargements des entreprises');
@@ -29,7 +29,7 @@ export const addEntreprise = (req: Request, res: Response): void => {
 
   // Check if an entreprise with the same code_client or social_reason already exists
   connection.query(
-    'SELECT * FROM Entreprises WHERE code_client = ? OR social_reason = ?',
+    'SELECT * FROM entreprises WHERE code_client = ? OR social_reason = ?',
     [code_client, social_reason],
     (err, results: any) => {
       if (err) {
@@ -53,7 +53,7 @@ export const addEntreprise = (req: Request, res: Response): void => {
     end_contract,
   };
 
-  connection.query('INSERT INTO Entreprises SET ?', entreprise, (err, results) => {
+  connection.query('INSERT INTO entreprises SET ?', entreprise, (err, results) => {
     if (err) {
       console.error('Error executing query:', err);
       res.status(500).send("Erreur de l'ajout de l'entreprise");
@@ -169,7 +169,7 @@ export const deleteEntreprise = (req: Request, res: Response): void => {
       return;
     }
 
-    connection.query('DELETE FROM Entreprises WHERE id = ?', entrepriseId, (err, entrepriseResult) => {
+    connection.query('DELETE FROM entreprises WHERE id = ?', entrepriseId, (err, entrepriseResult) => {
       if (err) {
         console.error('Error executing entreprise deletion query:', err);
         res.status(500).send("Erreur de la suppression de l'entreprise");
