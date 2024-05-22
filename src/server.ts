@@ -10,6 +10,7 @@ const winston = require('winston');
 
 require('dotenv').config();
 import apiRouter from './routes';
+import { connection } from './database';
 
 const app: Application = express()
 const port: Number = 4000
@@ -64,6 +65,10 @@ app.use('/api', apiRouter);
 app.get('/', (req: Request, res: Response) => {
   res.status(200).send('private-access-api is running!');
 });
+
+setInterval(() => {
+  connection.query('SELECT 1');
+}, 10000); // Run the query every 5 seconds
 
  
   // import bcrypt from 'bcrypt';
