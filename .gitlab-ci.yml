@@ -19,6 +19,7 @@ docker-job:
     - echo "Docker stage"
     # Recreate the .env file from the CI/CD variable
     - echo "$TEST_FILE"
+    - echo "$ENV_FILE"
     - echo "Copy .env file -> $ENV_FILE" > .env
     # Check if the container exists before attempting to remove it
     - docker rm -f private-access-api || echo "no container named private-access-api"
