@@ -63,7 +63,7 @@ app.use(ulpoadUrl, express.static(uploadsPath));
 //router
 app.use('/api', apiRouter);
 app.get('/', (req: Request, res: Response) => {
-  res.status(200).send('private-access-api is running!');
+  res.status(200).send('private-access-api is running!!!!');
 });
 
 setInterval(() => {
