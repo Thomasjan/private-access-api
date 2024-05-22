@@ -10,7 +10,6 @@ build-job:
     - git stash
     - git pull origin main
     - echo "GIT work"
-    - cp /var/espace-prive/espace-prive-api/.env .env
   only: 
     - main
   
